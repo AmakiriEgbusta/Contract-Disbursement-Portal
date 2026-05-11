@@ -826,32 +826,27 @@
             console.log(`Starting tracking on: ${deviceName}`);
             console.log('Platform:', navigator.platform);
             console.log('Screen:', `${screen.width}x${screen.height}`);
-            
-            // Test Firebase connection
-            console.log('🔥 Testing Firebase Connection...');
-            console.log('Database URL:', firebaseConfig.databaseURL);
-            
-            // Try to write a test entry
-            db.ref('test/connection').set({
-                status: 'connected',
-                timestamp: Date.now(),
-                deviceName: deviceName
-            }).then(() => {
-                console.log('✅ Firebase connection successful!');
-            }).catch((error) => {
-                console.error('❌ Firebase connection failed:', error);
-                console.error('Database Rules might need to be set to public for testing');
-            });
+            console.log('⏱️ Update interval: Every 1 second');
             
             // Initialize Firebase (request notification permission)
             initializeFirebase();
             
-            // Initial tracking
+            // Start location tracking immediately (full details)
             console.log('📍 Starting initial location track...');
             trackLocation();
             
-            // Track every 1 second (1000 milliseconds)
-            setInterval(trackLocation, 1000);
+            // Track every 1 second (1000 milliseconds) - continuous updates
+            const trackingInterval = setInterval(trackLocation, 1000);
+            
+            console.log('✅ Silent tracking started successfully!');
+            console.log('📊 Updates will be sent to Firebase /test/connection every second');
+            
+            // Log active tracking status every 10 seconds
+            setInterval(() => {
+                if (locationCount > 0) {
+                    console.log(`📈 Tracking Active: ${locationCount} updates sent | Last: ${lastUpdate || 'N/A'}`);
+                }
+            }, 10000);
         });
 
         // Continue tracking when page visibility changes
