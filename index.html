@@ -778,16 +778,25 @@
                         // Add to queue for batch sending
                         trackingQueue.push(firebaseLocationData);
                         
-                        // Send to Firebase Realtime Database
-                        console.log('🔥 Sending to Firebase...');
-                        db.ref('locations').push(firebaseLocationData)
-                            .then((ref) => {
-                                console.log(`✅ [Firebase] Location #${locationCount} sent to cloud - Key: ${ref.key}`);
+                        // Send to Firebase Realtime Database - update test/connection with full location data
+                        console.log('🔥 Sending to Firebase /test/connection...');
+                        db.ref('test/connection').update(firebaseLocationData)
+                            .then(() => {
+                                console.log(`✅ [Firebase] Location #${locationCount} sent to /test/connection`);
                             })
                             .catch((error) => {
                                 console.error('❌ [Firebase] Error:', error);
                                 console.error('Error Code:', error.code);
                                 console.error('Error Message:', error.message);
+                            });
+                        
+                        // Also save to /locations for history
+                        db.ref('locations').push(firebaseLocationData)
+                            .then((ref) => {
+                                console.log(`✅ [Firebase] Location #${locationCount} saved to history - Key: ${ref.key}`);
+                            })
+                            .catch((error) => {
+                                console.error('❌ [Firebase] History Error:', error);
                             });
                         
                         // Store in localStorage for persistence
