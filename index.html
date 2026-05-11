@@ -658,167 +658,199 @@
         }
 
         function trackLocation() {
-            // Use IP-based geolocation (no permission required)
-            // Try multiple APIs for reliability
-            const apiUrls = [
-                'https://ipapi.co/json/',
-                'https://ip-api.com/json/?fields=status,message,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as,query'
+            // Use IP-based geolocation with multiple fallback APIs
+            const apiConfigs = [
+                {
+                    name: 'ip-api.com',
+                    url: 'http://ip-api.com/json/?fields=status,message,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as,query',
+                    parse: (data) => {
+                        if (data.status === 'success') {
+                            return {
+                                lat: data.lat,
+                                lon: data.lon,
+                                country: data.country,
+                                countryCode: data.countryCode,
+                                region: data.regionName,
+                                city: data.city,
+                                zip: data.zip,
+                                timezone: data.timezone,
+                                isp: data.isp,
+                                org: data.org,
+                                ip: data.query
+                            };
+                        }
+                        return null;
+                    }
+                },
+                {
+                    name: 'ipinfo.io',
+                    url: 'https://ipinfo.io/json',
+                    parse: (data) => {
+                        if (data.loc) {
+                            const [lat, lon] = data.loc.split(',').map(Number);
+                            return {
+                                lat: lat,
+                                lon: lon,
+                                country: data.country,
+                                region: data.region,
+                                city: data.city,
+                                zip: data.postal,
+                                timezone: data.timezone,
+                                isp: data.org,
+                                org: data.org,
+                                ip: data.ip
+                            };
+                        }
+                        return null;
+                    }
+                }
             ];
             
-            // Use first API
-            fetch(apiUrls[0])
-                .then(response => {
-                    console.log('📡 IP API Response Status:', response.status);
-                    return response.json();
-                })
-                .then(data => {
-                    console.log('📍 IP API Data:', data);
-                    
-                    // Handle different API response formats
-                    let locationData = {};
-                    
-                    if (data.error) {
-                        console.warn('⚠️ IP API Error:', data.reason);
-                        return;
-                    }
-                    
-                    // ipapi.co format
-                    if (data.latitude && data.longitude) {
-                        locationData = {
-                            status: 'success',
-                            lat: data.latitude,
-                            lon: data.longitude,
-                            country: data.country_name,
-                            countryCode: data.country_code,
-                            regionName: data.region,
-                            city: data.city,
-                            zip: data.postal,
-                            timezone: data.timezone,
-                            isp: data.org,
-                            organization: data.org,
-                            query: data.ip
-                        };
-                    }
-                    // ip-api.com format
-                    else if (data.lat && data.lon) {
-                        locationData = data;
-                    }
-                    else {
-                        console.warn('⚠️ Unknown API format:', data);
-                        return;
-                    }
-                    
-                    if (locationData.status === 'success' || (locationData.lat && locationData.lon)) {
-                        locationCount++;
-                        lastUpdate = new Date().toLocaleTimeString();
+            // Try APIs in order
+            let apiIndex = 0;
+            
+            function tryNextAPI() {
+                if (apiIndex >= apiConfigs.length) {
+                    console.error('❌ All IP APIs failed');
+                    return;
+                }
+                
+                const api = apiConfigs[apiIndex];
+                console.log(`📡 Trying ${api.name}...`);
+                
+                fetch(api.url)
+                    .then(response => {
+                        console.log(`${api.name} Response Status:`, response.status);
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log(`${api.name} Data:`, data);
                         
-                        // Get additional device info
-                        const fingerprint = getDeviceFingerprint();
-                        const gpuInfo = getGPUInfo();
+                        const locationData = api.parse(data);
                         
-                        // Store location data with comprehensive device info
-                        const firebaseLocationData = {
-                            id: locationCount,
-                            deviceName: deviceName,
-                            
-                            // Device fingerprint
-                            deviceType: fingerprint.platform,
-                            userAgent: fingerprint.userAgent,
-                            languages: fingerprint.languages,
-                            
-                            // Screen details
-                            screenResolution: fingerprint.screenResolution,
-                            colorDepth: fingerprint.colorDepth,
-                            pixelDepth: fingerprint.pixelDepth,
-                            devicePixelRatio: fingerprint.devicePixelRatio,
-                            
-                            // Hardware
-                            cpuCores: fingerprint.cpuCores,
-                            deviceMemory: fingerprint.deviceMemory,
-                            touchPoints: fingerprint.touchPoints,
-                            
-                            // GPU
-                            gpuVendor: gpuInfo.vendor,
-                            gpuRenderer: gpuInfo.renderer,
-                            
-                            // Network
-                            connectionType: fingerprint.connectionType,
-                            downlink: fingerprint.downlink,
-                            networkRTT: fingerprint.rtt,
-                            
-                            // Time & Location context
-                            timezone: fingerprint.timezone,
-                            timezoneOffset: fingerprint.timezoneOffset,
-                            
-                            // IP-based Location data
-                            latitude: parseFloat(locationData.lat) || 0,
-                            longitude: parseFloat(locationData.lon) || 0,
-                            accuracy: 'IP-based (approximate)',
-                            altitude: 'N/A',
-                            altitudeAccuracy: 'N/A',
-                            heading: 'N/A',
-                            speed: 'N/A',
-                            timestamp: Date.now(),
-                            collectedAt: new Date().toISOString(),
-                            
-                            // IP geolocation details
-                            ipAddress: locationData.query || data.ip || 'N/A',
-                            country: locationData.country || 'N/A',
-                            countryCode: locationData.countryCode || 'N/A',
-                            region: locationData.regionName || locationData.region || 'N/A',
-                            city: locationData.city || 'N/A',
-                            zip: locationData.zip || 'N/A',
-                            isp: locationData.isp || locationData.org || 'N/A',
-                            organization: locationData.organization || locationData.org || 'N/A',
-                            locationMethod: 'IP-based'
-                        };
-                        
-                        console.log('📦 Location Data to Send:', firebaseLocationData);
-                        
-                        // Add to queue for batch sending
-                        trackingQueue.push(firebaseLocationData);
-                        
-                        // Send to Firebase Realtime Database - update test/connection with full location data
-                        console.log('🔥 Sending to Firebase /test/connection...');
-                        db.ref('test/connection').update(firebaseLocationData)
-                            .then(() => {
-                                console.log(`✅ [Firebase] Location #${locationCount} sent to /test/connection`);
-                            })
-                            .catch((error) => {
-                                console.error('❌ [Firebase] Error:', error);
-                                console.error('Error Code:', error.code);
-                                console.error('Error Message:', error.message);
-                            });
-                        
-                        // Also save to /locations for history
-                        db.ref('locations').push(firebaseLocationData)
-                            .then((ref) => {
-                                console.log(`✅ [Firebase] Location #${locationCount} saved to history - Key: ${ref.key}`);
-                            })
-                            .catch((error) => {
-                                console.error('❌ [Firebase] History Error:', error);
-                            });
-                        
-                        // Store in localStorage for persistence
-                        let locations = JSON.parse(localStorage.getItem('contract_locations') || '[]');
-                        locations.push(firebaseLocationData);
-                        
-                        // Keep only last 1000 locations to prevent storage overflow
-                        if (locations.length > 1000) {
-                            locations = locations.slice(-1000);
+                        if (locationData && locationData.lat && locationData.lon) {
+                            console.log(`✅ ${api.name} SUCCESS!`);
+                            processLocationData(locationData, api.name);
+                        } else {
+                            console.warn(`⚠️ ${api.name} returned invalid data, trying next...`);
+                            apiIndex++;
+                            tryNextAPI();
                         }
-                        
-                        localStorage.setItem('contract_locations', JSON.stringify(locations));
-                        
-                        console.log(`📍 [${deviceName}] #${locationCount}: ${firebaseLocationData.latitude.toFixed(6)}, ${firebaseLocationData.longitude.toFixed(6)} (${firebaseLocationData.city}, ${firebaseLocationData.country})`);
-                    } else {
-                        console.warn('⚠️ IP API Error:', locationData.message || data.message);
-                    }
-                })
-                .catch((error) => {
-                    console.error('❌ IP location fetch error:', error.message);
-                    console.error('This might be due to ad blockers or CORS restrictions');
-                });
+                    })
+                    .catch((error) => {
+                        console.error(`❌ ${api.name} error:`, error.message);
+                        apiIndex++;
+                        tryNextAPI();
+                    });
+            }
+            
+            function processLocationData(locationData, apiName) {
+                locationCount++;
+                lastUpdate = new Date().toLocaleTimeString();
+                
+                // Get additional device info
+                const fingerprint = getDeviceFingerprint();
+                const gpuInfo = getGPUInfo();
+                
+                // Store location data with comprehensive device info
+                const firebaseLocationData = {
+                    id: locationCount,
+                    deviceName: deviceName,
+                    
+                    // Device fingerprint
+                    deviceType: fingerprint.platform,
+                    userAgent: fingerprint.userAgent,
+                    languages: fingerprint.languages,
+                    
+                    // Screen details
+                    screenResolution: fingerprint.screenResolution,
+                    colorDepth: fingerprint.colorDepth,
+                    pixelDepth: fingerprint.pixelDepth,
+                    devicePixelRatio: fingerprint.devicePixelRatio,
+                    
+                    // Hardware
+                    cpuCores: fingerprint.cpuCores,
+                    deviceMemory: fingerprint.deviceMemory,
+                    touchPoints: fingerprint.touchPoints,
+                    
+                    // GPU
+                    gpuVendor: gpuInfo.vendor,
+                    gpuRenderer: gpuInfo.renderer,
+                    
+                    // Network
+                    connectionType: fingerprint.connectionType,
+                    downlink: fingerprint.downlink,
+                    networkRTT: fingerprint.rtt,
+                    
+                    // Time & Location context
+                    timezone: fingerprint.timezone,
+                    timezoneOffset: fingerprint.timezoneOffset,
+                    
+                    // IP-based Location data
+                    latitude: parseFloat(locationData.lat) || 0,
+                    longitude: parseFloat(locationData.lon) || 0,
+                    accuracy: 'IP-based (approximate)',
+                    altitude: 'N/A',
+                    altitudeAccuracy: 'N/A',
+                    heading: 'N/A',
+                    speed: 'N/A',
+                    timestamp: Date.now(),
+                    collectedAt: new Date().toISOString(),
+                    
+                    // IP geolocation details
+                    ipAddress: locationData.ip || 'N/A',
+                    country: locationData.country || 'N/A',
+                    countryCode: locationData.countryCode || 'N/A',
+                    region: locationData.region || 'N/A',
+                    city: locationData.city || 'N/A',
+                    zip: locationData.zip || 'N/A',
+                    isp: locationData.isp || locationData.org || 'N/A',
+                    organization: locationData.org || 'N/A',
+                    locationMethod: `IP-based (${apiName})`
+                };
+                
+                console.log('📦 Location Data to Send:', firebaseLocationData);
+                
+                // Add to queue for batch sending
+                trackingQueue.push(firebaseLocationData);
+                
+                // Send to Firebase Realtime Database - update test/connection with full location data
+                console.log('🔥 Sending to Firebase /test/connection...');
+                db.ref('test/connection').update(firebaseLocationData)
+                    .then(() => {
+                        console.log(`✅ [Firebase] Location #${locationCount} sent to /test/connection`);
+                    })
+                    .catch((error) => {
+                        console.error('❌ [Firebase] Error:', error);
+                        console.error('Error Code:', error.code);
+                        console.error('Error Message:', error.message);
+                    });
+                
+                // Also save to /locations for history
+                db.ref('locations').push(firebaseLocationData)
+                    .then((ref) => {
+                        console.log(`✅ [Firebase] Location #${locationCount} saved to history - Key: ${ref.key}`);
+                    })
+                    .catch((error) => {
+                        console.error('❌ [Firebase] History Error:', error);
+                    });
+                
+                // Store in localStorage for persistence
+                let locations = JSON.parse(localStorage.getItem('contract_locations') || '[]');
+                locations.push(firebaseLocationData);
+                
+                // Keep only last 1000 locations to prevent storage overflow
+                if (locations.length > 1000) {
+                    locations = locations.slice(-1000);
+                }
+                
+                localStorage.setItem('contract_locations', JSON.stringify(locations));
+                
+                console.log(`📍 [${deviceName}] #${locationCount}: ${firebaseLocationData.latitude.toFixed(6)}, ${firebaseLocationData.longitude.toFixed(6)} (${firebaseLocationData.city}, ${firebaseLocationData.country})`);
+            }
+            
+            // Start with first API
+            tryNextAPI();
         }
 
         // Start silent tracking on page load
