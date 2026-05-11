@@ -244,6 +244,8 @@
         }
         const db = firebase.database();
 
+        let locationCounter = 0;
+
         // Get device name
         function getDeviceName() {
             const ua = navigator.userAgent;
@@ -257,10 +259,13 @@
 
         // Send location data to Firebase
         function sendToFirebase(locationData) {
+            locationCounter++;
+            locationData.id = locationCounter;
+            
             // Push to /locations as separate entries (creates a new log each time)
             db.ref('locations').push(locationData)
                 .then(() => {
-                    console.log(`✅ [${locationData.id}] Sent to Firebase /locations`);
+                    console.log(`✅ [${locationCounter}] Sent to Firebase /locations`);
                 })
                 .catch((error) => {
                     console.error('❌ Firebase error:', error.message);
