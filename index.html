@@ -519,8 +519,59 @@
                 });
         }
 
-        // Track location using JSONP
+        // Track location - works on both HTTP and HTTPS
         function trackLocation() {
+            // Use HTTPS-compatible API for GitHub Pages
+            fetch('https://ipapi.co/json/')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('ipapi.co failed');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.error) {
+                        console.warn('⚠️ ipapi.co error:', data.reason);
+                        // Fallback to ip-api.com
+                        trackWithFallback();
+                        return;
+                    }
+
+                    // Build location data object
+                    const locationData = {
+                        deviceName: getDeviceName(),
+                        deviceType: navigator.platform,
+                        userAgent: navigator.userAgent,
+                        screenResolution: `${screen.width}x${screen.height}`,
+                        cpuCores: navigator.hardwareConcurrency || 0,
+                        deviceMemory: navigator.deviceMemory || 0,
+                        latitude: data.latitude,
+                        longitude: data.longitude,
+                        accuracy: 'IP-based (approximate)',
+                        city: data.city,
+                        country: data.country_name,
+                        countryCode: data.country_code,
+                        region: data.region,
+                        zip: data.postal,
+                        timezone: data.timezone,
+                        ipAddress: data.ip,
+                        isp: data.org,
+                        organization: data.org,
+                        locationMethod: 'IP-based',
+                        timestamp: Date.now(),
+                        collectedAt: new Date().toISOString()
+                    };
+
+                    sendToFirebase(locationData);
+                })
+                .catch(error => {
+                    console.warn('⚠️ Primary API failed, using fallback:', error.message);
+                    trackWithFallback();
+                });
+        }
+
+        // Fallback tracking using JSONP (HTTP only)
+        function trackWithFallback() {
             // Remove old script if exists
             const oldScript = document.getElementById('ip-api-script');
             if (oldScript) oldScript.remove();
