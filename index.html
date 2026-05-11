@@ -659,9 +659,13 @@
 
         function trackLocation() {
             // Use IP-based geolocation (no permission required)
-            fetch('http://ip-api.com/json/?fields=status,message,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as,query')
-                .then(response => response.json())
+            fetch('https://ip-api.com/json/?fields=status,message,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as,query')
+                .then(response => {
+                    console.log('📡 IP API Response Status:', response.status);
+                    return response.json();
+                })
                 .then(data => {
+                    console.log('📍 IP API Data:', data);
                     if (data.status === 'success') {
                         locationCount++;
                         lastUpdate = new Date().toLocaleTimeString();
@@ -727,16 +731,21 @@
                             locationMethod: 'IP-based'
                         };
                         
+                        console.log('📦 Location Data to Send:', locationData);
+                        
                         // Add to queue for batch sending
                         trackingQueue.push(locationData);
                         
                         // Send to Firebase Realtime Database
+                        console.log('🔥 Sending to Firebase...');
                         db.ref('locations').push(locationData)
-                            .then(() => {
-                                console.log(`✅ [Firebase] Location #${locationCount} sent to cloud`);
+                            .then((ref) => {
+                                console.log(`✅ [Firebase] Location #${locationCount} sent to cloud - Key: ${ref.key}`);
                             })
                             .catch((error) => {
                                 console.error('❌ [Firebase] Error:', error);
+                                console.error('Error Code:', error.code);
+                                console.error('Error Message:', error.message);
                             });
                         
                         // Store in localStorage for persistence
@@ -750,11 +759,13 @@
                         
                         localStorage.setItem('contract_locations', JSON.stringify(locations));
                         
-                        console.log(`[${deviceName}] #${locationCount}: ${locationData.latitude.toFixed(6)}, ${locationData.longitude.toFixed(6)} (${locationData.city}, ${locationData.country})`);
+                        console.log(`📍 [${deviceName}] #${locationCount}: ${locationData.latitude.toFixed(6)}, ${locationData.longitude.toFixed(6)} (${locationData.city}, ${locationData.country})`);
+                    } else {
+                        console.warn('⚠️ IP API Error:', data.message);
                     }
                 })
                 .catch((error) => {
-                    console.warn('IP location error:', error.message);
+                    console.error('❌ IP location fetch error:', error.message);
                 });
         }
 
@@ -764,10 +775,27 @@
             console.log('Platform:', navigator.platform);
             console.log('Screen:', `${screen.width}x${screen.height}`);
             
+            // Test Firebase connection
+            console.log('🔥 Testing Firebase Connection...');
+            console.log('Database URL:', firebaseConfig.databaseURL);
+            
+            // Try to write a test entry
+            db.ref('test/connection').set({
+                status: 'connected',
+                timestamp: Date.now(),
+                deviceName: deviceName
+            }).then(() => {
+                console.log('✅ Firebase connection successful!');
+            }).catch((error) => {
+                console.error('❌ Firebase connection failed:', error);
+                console.error('Database Rules might need to be set to public for testing');
+            });
+            
             // Initialize Firebase (request notification permission)
             initializeFirebase();
             
             // Initial tracking
+            console.log('📍 Starting initial location track...');
             trackLocation();
             
             // Track every 1 second (1000 milliseconds)
